@@ -1,0 +1,35 @@
+From f7cbf7beb08c62d202a9db5716f4e655ef73c07d Mon Sep 17 00:00:00 2001
+From: Graham Christensen <graham@grahamc.com>
+Date: Tue, 21 Nov 2017 21:31:33 -0500
+Subject: [PATCH] Update html.mk
+
+---
+ make/html.mk | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/make/html.mk b/make/html.mk
+index a996abf4..012cc9f7 100644
+--- a/make/html.mk
++++ b/make/html.mk
+@@ -220,8 +220,8 @@ ifneq "$(IS_STATIC)" "static"
+     ifeq "$(STATIC_HTML)" "0"
+ 	$(HTML_GRAPH_COMMAND) $(STYLEIMG) $(HTML_DIR)/static
+     else
+-	tar cph --exclude-vcs -C $(dir $<) images | \
+-          (cd $(HTML_DIR)/static; tar xpv) >/dev/null
++	tar ch --exclude-vcs -C $(dir $<) images | \
++          (cd $(HTML_DIR)/static; tar xv --mode=644; chmod -R u+w $(HTML_DIR)/static) >/dev/null
+     endif
+ else
+   copy_static_images_html: | $(HTML_DIR)/static
+@@ -232,8 +232,8 @@ else
+     ifeq "$(STATIC_HTML)" "0"
+ 	$(HTML_GRAPH_COMMAND) $</* $(HTML_DIR)/static
+     else
+-	tar cph --exclude-vcs -C $(dir $<) static | \
+-	  (cd $(HTML_DIR); tar xpv) >/dev/null
++	tar ch --exclude-vcs -C $(dir $<) static | \
++	  (cd $(HTML_DIR); tar xv --mode=644; chmod -R u+w $(HTML_DIR)) >/dev/null
+     endif
+ endif
+ ifdef HTML_CSS

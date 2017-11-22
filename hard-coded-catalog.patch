@@ -1,0 +1,23 @@
+From 566f9b1ead967a3a3a5e20145697ba6a959d528f Mon Sep 17 00:00:00 2001
+From: Graham Christensen <graham@grahamc.com>
+Date: Tue, 21 Nov 2017 20:39:32 -0500
+Subject: [PATCH] Update daps.in
+
+---
+ bin/daps.in | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/bin/daps.in b/bin/daps.in
+index 395ffeb6..51985abf 100755
+--- a/bin/daps.in
++++ b/bin/daps.in
+@@ -1704,6 +1704,9 @@ fi
+ if [[ -n "$XML_DEVEL_CATALOG" ]]; then
+     XML_CATALOG_FILES="$XML_DEVEL_CATALOG $XML_CATALOG_FILES"
+ fi
++XML_CATALOG_FILES="@catalog@ $XML_CATALOG_FILES"
++XML_MAIN_CATALOG="@catalog@"
++xmlcatalog "$XML_MAIN_CATALOG" "$DOCBOOK5_STYLE_URI"
+ export XML_CATALOG_FILES
+
+ # ----------------------------------------------------------------------------

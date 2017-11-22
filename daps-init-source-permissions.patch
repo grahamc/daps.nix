@@ -1,0 +1,27 @@
+From 565613ce308e5ae7d0cfe76ed820ae35debf2ddd Mon Sep 17 00:00:00 2001
+From: Graham Christensen <graham@grahamc.com>
+Date: Tue, 21 Nov 2017 20:28:27 -0500
+Subject: [PATCH] Update daps-init
+
+---
+ bin/daps-init | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/bin/daps-init b/bin/daps-init
+index 64fa9cb1..60e95568 100755
+--- a/bin/daps-init
++++ b/bin/daps-init
+@@ -239,10 +239,13 @@ mkdir -p "${DOC_DIR}"/images/src/{dia,fig,jpg,png,svg,eps,pdf} "${DOC_DIR}/xml"
+ 
+ # DC-file
+ cp "$DC_TEMPLATE" "$DC_FILE" || exit_on_error "Failed to copy $DC_TEMPLATE"
++chmod u+w "$DC_FILE"
+ # MAIN
+ cp "$MAIN_TEMPLATE" "$MAIN" || exit_on_error "Failed to copy $MAIN_TEMPLATE"
++chmod u+w "$MAIN"
+ # graphics
+ cp "${DAPSROOT}"/init_templates/example{1,2}.png "${IMG_DIR}/png/" || exit_on_error "Failed to copy images from $TEMPLATE_DIR}"
++chmod u+w "${IMG_DIR}"/png/example{1,2}.png
+ 
+ #----------------
+ # Adjust the content in the tempate files

@@ -1,0 +1,23 @@
+From 67e20b13f4c1fd2bea5233043350394a0d9d0472 Mon Sep 17 00:00:00 2001
+From: Graham Christensen <graham@grahamc.com>
+Date: Tue, 21 Nov 2017 20:51:09 -0500
+Subject: [PATCH] Update daps.in
+
+---
+ bin/daps.in | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/bin/daps.in b/bin/daps.in
+index 395ffeb6..26a16cfe 100755
+--- a/bin/daps.in
++++ b/bin/daps.in
+@@ -11,4 +11,7 @@ MY_NAME=DAPS
+ VERSION=@PACKAGE_VERSION@
+ MY_URL=https://opensuse.github.io/daps
+
++PATH="@mypath@:$PATH"
++export PATH
++
+ export MY_NAME VERSION MY_URL
+
+ # autoconf replaces @foo@ stuff with ${prefix}/.. if @foo@ has not
