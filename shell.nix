@@ -4,5 +4,5 @@ pkgs.stdenv.mkDerivation {
 
   buildInputs = (with pkgs; [
 
-  ]) ++ [(import ./daps.nix {})];
+  ]) ++ [(import ./daps/daps.nix {})];
 }
