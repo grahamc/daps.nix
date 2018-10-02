@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Replace Modules</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="sec-writing-modules.html" title="Chapter 22. Writing NixOS Modules" /><link rel="prev" href="sec-meta-attributes.html" title="Meta Attributes" /><link rel="next" href="sec-building-parts.html" title="Chapter 23. Building Specific Parts of NixOS" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Replace Modules</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-meta-attributes.html">Prev</a> </td><th width="60%" align="center">Chapter 22. Writing NixOS Modules</th><td width="20%" align="right"> <a accesskey="n" href="sec-building-parts.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-replace-modules"></a>Replace Modules</h2></div></div></div><p>Modules that are imported can also be disabled.  The option
+  declarations and config implementation of a disabled module will be
+  ignored, allowing another to take it's place.  This can be used to
+  import a set of modules from another channel while keeping the rest
+  of the system on a stable release.</p><p><code class="literal">disabledModules</code> is a top level attribute like
+  <code class="literal">imports</code>, <code class="literal">options</code> and
+  <code class="literal">config</code>.  It contains a list of modules that will
+  be disabled. This can either be the full path to the module or a
+  string with the filename relative to the modules path
+  (eg. &lt;nixpkgs/nixos/modules&gt; for nixos).
+  </p><p>This example will replace the existing postgresql module with
+  the version defined in the nixos-unstable channel while keeping the
+  rest of the modules and packages from the original nixos channel.
+  This only overrides the module definition, this won't use postgresql
+  from nixos-unstable unless explicitly configured to do so.</p><pre class="programlisting">
+{ config, lib, pkgs, ... }:
+
+{
+  disabledModules = [ "services/databases/postgresql.nix" ];
+
+  imports =
+    [ # Use postgresql service from nixos-unstable channel.
+      # sudo nix-channel --add http://nixos.org/channels/nixos-unstable nixos-unstable
+      &lt;nixos-unstable/nixos/modules/services/databases/postgresql.nix&gt;
+    ];
+
+  services.postgresql.enable = true;
+}
+</pre><p>This example shows how to define a custom module as a
+  replacement for an existing module. Importing this module will
+  disable the original module without having to know it's
+  implementation details.</p><pre class="programlisting">
+{ config, lib, pkgs, ... }:
+
+with lib;
+
+let
+  cfg = config.programs.man;
+in
+
+{
+  disabledModules = [ "services/programs/man.nix" ];
+
+  options = {
+    programs.man.enable = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Whether to enable manual pages.";
+    };
+  };
+
+  config = mkIf cfg.enabled {
+    warnings = [ "disabled manpages for production deployments." ];
+  };
+}
+</pre></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-meta-attributes.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sec-writing-modules.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-building-parts.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Meta Attributes </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 23. Building Specific Parts of NixOS</td></tr></table></div></body></html>

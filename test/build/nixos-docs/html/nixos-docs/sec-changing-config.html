@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Chapter 3. Changing the Configuration</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-installation.html" title="Part I. Installation" /><link rel="prev" href="sec-instaling-virtualbox-guest.html" title="Installing in a Virtualbox guest" /><link rel="next" href="sec-upgrading.html" title="Chapter 4. Upgrading NixOS" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 3. Changing the Configuration</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-instaling-virtualbox-guest.html">Prev</a> </td><th width="60%" align="center">Part I. Installation</th><td width="20%" align="right"> <a accesskey="n" href="sec-upgrading.html">Next</a></td></tr></table><hr /></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a id="sec-changing-config"></a>Chapter 3. Changing the Configuration</h2></div></div></div><p>The file <code class="filename">/etc/nixos/configuration.nix</code>
+contains the current configuration of your machine.  Whenever you’ve
+<a class="link" href="ch-configuration.html" title="Part II. Configuration">changed something</a> in that file, you should do
+
+</p><pre class="screen">
+# nixos-rebuild switch</pre><p>
+
+to build the new configuration, make it the default configuration for
+booting, and try to realise the configuration in the running system
+(e.g., by restarting system services).</p><div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Warning</h3><p>These commands must be executed as root, so you should
+either run them from a root shell or by prefixing them with
+<code class="literal">sudo -i</code>.</p></div><p>You can also do
+
+</p><pre class="screen">
+# nixos-rebuild test</pre><p>
+
+to build the configuration and switch the running system to it, but
+without making it the boot default.  So if (say) the configuration
+locks up your machine, you can just reboot to get back to a working
+configuration.</p><p>There is also
+
+</p><pre class="screen">
+# nixos-rebuild boot</pre><p>
+
+to build the configuration and make it the boot default, but not
+switch to it now (so it will only take effect after the next
+reboot).</p><p>You can make your configuration show up in a different submenu
+of the GRUB 2 boot screen by giving it a different <span class="emphasis"><em>profile
+name</em></span>, e.g.
+
+</p><pre class="screen">
+# nixos-rebuild switch -p test </pre><p>
+
+which causes the new configuration (and previous ones created using
+<code class="literal">-p test</code>) to show up in the GRUB submenu “NixOS -
+Profile 'test'”.  This can be useful to separate test configurations
+from “stable” configurations.</p><p>Finally, you can do
+
+</p><pre class="screen">
+$ nixos-rebuild build</pre><p>
+
+to build the configuration but nothing more.  This is useful to see
+whether everything compiles cleanly.</p><p>If you have a machine that supports hardware virtualisation, you
+can also test the new configuration in a sandbox by building and
+running a QEMU <span class="emphasis"><em>virtual machine</em></span> that contains the
+desired configuration.  Just do
+
+</p><pre class="screen">
+$ nixos-rebuild build-vm
+$ ./result/bin/run-*-vm
+</pre><p>
+
+The VM does not have any data from your host system, so your existing
+user accounts and home directories will not be available.  You can
+forward ports on the host to the guest.  For instance, the following
+will forward host port 2222 to guest port 22 (SSH):
+
+</p><pre class="screen">
+$ QEMU_NET_OPTS="hostfwd=tcp::2222-:22" ./result/bin/run-*-vm
+</pre><p>
+
+allowing you to log in via SSH (assuming you have set the appropriate
+passwords or SSH authorized keys):
+
+</p><pre class="screen">
+$ ssh -p 2222 localhost
+</pre><p>
+
+</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-instaling-virtualbox-guest.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-installation.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-upgrading.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Installing in a Virtualbox guest </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 4. Upgrading NixOS</td></tr></table></div></body></html>

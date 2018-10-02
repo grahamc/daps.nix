@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Chapter 23. Building Specific Parts of NixOS</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-development.html" title="Part IV. Development" /><link rel="prev" href="sec-replace-modules.html" title="Replace Modules" /><link rel="next" href="sec-writing-documentation.html" title="Chapter 24. Writing NixOS Documentation" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 23. Building Specific Parts of NixOS</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-replace-modules.html">Prev</a> </td><th width="60%" align="center">Part IV. Development</th><td width="20%" align="right"> <a accesskey="n" href="sec-writing-documentation.html">Next</a></td></tr></table><hr /></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a id="sec-building-parts"></a>Chapter 23. Building Specific Parts of NixOS</h2></div></div></div><p>With the command <span class="command"><strong>nix-build</strong></span>, you can build
+specific parts of your NixOS configuration.  This is done as follows:
+
+</p><pre class="screen">
+$ cd <em class="replaceable"><code>/path/to/nixpkgs/nixos</code></em>
+$ nix-build -A config.<em class="replaceable"><code>option</code></em></pre><p>
+
+where <em class="replaceable"><code>option</code></em> is a NixOS option with type
+“derivation” (i.e. something that can be built).  Attributes of
+interest include:
+
+</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="varname">system.build.toplevel</code></span></dt><dd><p>The top-level option that builds the entire NixOS system.
+      Everything else in your configuration is indirectly pulled in by
+      this option.  This is what <span class="command"><strong>nixos-rebuild</strong></span>
+      builds and what <code class="filename">/run/current-system</code> points
+      to afterwards.</p><p>A shortcut to build this is:
+
+</p><pre class="screen">
+$ nix-build -A system</pre><p>
+      </p></dd><dt><span class="term"><code class="varname">system.build.manual.manual</code></span></dt><dd><p>The NixOS manual.</p></dd><dt><span class="term"><code class="varname">system.build.etc</code></span></dt><dd><p>A tree of symlinks that form the static parts of
+    <code class="filename">/etc</code>.</p></dd><dt><span class="term"><code class="varname">system.build.initialRamdisk</code>, </span><span class="term"><code class="varname">system.build.kernel</code></span></dt><dd><p>The initial ramdisk and kernel of the system.  This allows
+      a quick way to test whether the kernel and the initial ramdisk
+      boot correctly, by using QEMU’s <code class="option">-kernel</code> and
+      <code class="option">-initrd</code> options:
+
+</p><pre class="screen">
+$ nix-build -A config.system.build.initialRamdisk -o initrd
+$ nix-build -A config.system.build.kernel -o kernel
+$ qemu-system-x86_64 -kernel ./kernel/bzImage -initrd ./initrd/initrd -hda /dev/null
+</pre><p>
+
+      </p></dd><dt><span class="term"><code class="varname">system.build.nixos-rebuild</code>, </span><span class="term"><code class="varname">system.build.nixos-install</code>, </span><span class="term"><code class="varname">system.build.nixos-generate-config</code></span></dt><dd><p>These build the corresponding NixOS commands.</p></dd><dt><span class="term"><code class="varname">systemd.units.<em class="replaceable"><code>unit-name</code></em>.unit</code></span></dt><dd><p>This builds the unit with the specified name.  Note that
+      since unit names contain dots
+      (e.g. <code class="literal">httpd.service</code>), you need to put them
+      between quotes, like this:
+
+</p><pre class="screen">
+$ nix-build -A 'config.systemd.units."httpd.service".unit'
+</pre><p>
+
+      You can also test individual units, without rebuilding the whole
+      system, by putting them in
+      <code class="filename">/run/systemd/system</code>:
+
+</p><pre class="screen">
+$ cp $(nix-build -A 'config.systemd.units."httpd.service".unit')/httpd.service \
+    /run/systemd/system/tmp-httpd.service
+# systemctl daemon-reload
+# systemctl start tmp-httpd.service
+</pre><p>
+
+      Note that the unit must not have the same name as any unit in
+      <code class="filename">/etc/systemd/system</code> since those take
+      precedence over <code class="filename">/run/systemd/system</code>.
+      That’s why the unit is installed as
+      <code class="filename">tmp-httpd.service</code> here.</p></dd></dl></div><p>
+
+</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-replace-modules.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-development.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-writing-documentation.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Replace Modules </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 24. Writing NixOS Documentation</td></tr></table></div></body></html>

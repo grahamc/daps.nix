@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Chapter 28. Releases</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-development.html" title="Part IV. Development" /><link rel="prev" href="ch-testing-installer.html" title="Chapter 27. Testing the Installer" /><link rel="next" href="release-schedule.html" title="Release schedule" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 28. Releases</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch-testing-installer.html">Prev</a> </td><th width="60%" align="center">Part IV. Development</th><td width="20%" align="right"> <a accesskey="n" href="release-schedule.html">Next</a></td></tr></table><hr /></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a id="ch-releases"></a>Chapter 28. Releases</h2></div></div></div><div class="toc"><p><strong>Table of Contents</strong></p><dl class="toc"><dt><span class="section"><a href="ch-releases.html#release-process">Release process</a></span></dt><dd><dl><dt><span class="section"><a href="ch-releases.html#one-month-before-the-beta">One month before the beta</a></span></dt><dt><span class="section"><a href="ch-releases.html#at-beta-release-time">At beta release time</a></span></dt><dt><span class="section"><a href="ch-releases.html#during-beta">During Beta</a></span></dt><dt><span class="section"><a href="ch-releases.html#before-the-final-release">Before the final release</a></span></dt><dt><span class="section"><a href="ch-releases.html#at-final-release-time">At final release time</a></span></dt></dl></dd><dt><span class="section"><a href="release-schedule.html">Release schedule</a></span></dt></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="release-process"></a>Release process</h2></div></div></div><p>
+    Going through an example of releasing NixOS 17.09:
+  </p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="one-month-before-the-beta"></a>One month before the beta</h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist compact" style="list-style-type: disc; "><li class="listitem"><p>
+          Send an email to the nix-devel mailinglist as a warning about upcoming beta "feature freeze" in a month.
+        </p></li><li class="listitem"><p>
+          Discuss with Eelco Dolstra and the community (via IRC, ML) about what will reach the deadline.
+          Any issue or Pull Request targeting the release should be included in the release milestone.
+        </p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="at-beta-release-time"></a>At beta release time</h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist compact" style="list-style-type: disc; "><li class="listitem"><p>
+          <a class="link" href="development-https://github.com/NixOS/nixpkgs/issues/13559" target="_top">Create
+            an issue for tracking Zero Hydra Failures progress. ZHF is an effort
+            to get build failures down to zero.</a>
+        </p></li><li class="listitem"><p>
+          <code class="literal">git tag -a -s -m "Release 17.09-beta" 17.09-beta &amp;&amp; git push --tags</code>
+        </p></li><li class="listitem"><p>
+          From the master branch run <code class="literal">git checkout -B release-17.09</code>.
+        </p></li><li class="listitem"><p>
+          <a class="link" href="development-https://github.com/NixOS/nixos-org-configurations/pull/18" target="_top">
+            Make sure a channel is created at http://nixos.org/channels/.
+          </a>
+        </p></li><li class="listitem"><p>
+          <a class="link" href="development-https://github.com/NixOS/nixpkgs/settings/branches" target="_top">
+            Let a GitHub nixpkgs admin lock the branch on github for you.
+            (so developers can’t force push)
+          </a>
+        </p></li><li class="listitem"><p>
+          <a class="link" href="development-https://github.com/NixOS/nixpkgs/compare/bdf161ed8d21...6b63c4616790" target="_top">
+            Bump the <code class="literal">system.defaultChannel</code> attribute in
+            <code class="literal">nixos/modules/misc/version.nix</code>
+          </a>
+        </p></li><li class="listitem"><p>
+          <a class="link" href="development-https://github.com/NixOS/nixpkgs/commit/d6b08acd1ccac0d9d502c4b635e00b04d3387f06" target="_top">
+            Update <code class="literal">versionSuffix</code> in
+          <code class="literal">nixos/release.nix</code></a>, use
+          <code class="literal">git log --format=%an|wc -l</code> to get the commit
+          count
+        </p></li><li class="listitem"><p>
+          <code class="literal">echo -n "18.03" &gt; .version</code> on
+          master.
+        </p></li><li class="listitem"><p>
+          <a class="link" href="development-https://github.com/NixOS/nixpkgs/commit/b8a4095003e27659092892a4708bb3698231a842" target="_top">
+            Pick a new name for the unstable branch.
+          </a>
+        </p></li><li class="listitem"><p>
+          Create a new release notes file for the upcoming release + 1, in this
+          case <code class="literal">rl-1803.xml</code>.
+        </p></li><li class="listitem"><p>
+          Create two Hydra jobsets: release-17.09 and release-17.09-small with <code class="literal">stableBranch</code> set to false.
+        </p></li><li class="listitem"><p>
+          Edit changelog at
+          <code class="literal">nixos/doc/manual/release-notes/rl-1709.xml</code>
+          (double check desktop versions are noted)
+        </p><div class="itemizedlist"><ul class="itemizedlist compact" style="list-style-type: circle; "><li class="listitem"><p>
+              Get all new NixOS modules
+              <code class="literal">git diff release-17.03..release-17.09 nixos/modules/module-list.nix|grep ^+</code>
+            </p></li><li class="listitem"><p>
+              Note systemd, kernel, glibc and Nix upgrades.
+            </p></li></ul></div></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="during-beta"></a>During Beta</h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist compact" style="list-style-type: disc; "><li class="listitem"><p>
+          Monitor the master branch for bugfixes and minor updates
+          and cherry-pick them to the release branch.
+        </p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="before-the-final-release"></a>Before the final release</h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist compact" style="list-style-type: disc; "><li class="listitem"><p>
+          Re-check that the release notes are complete.
+        </p></li><li class="listitem"><p>
+          Release Nix (currently only Eelco Dolstra can do that).
+          <a class="link" href="development-https://github.com/NixOS/nixpkgs/commit/53710c752a85f00658882531bc90a23a3d1287e4" target="_top">
+            Make sure fallback is updated.
+          </a>
+        </p></li><li class="listitem"><p>
+          <a class="link" href="development-https://github.com/NixOS/nixpkgs/commit/40fd9ae3ac8048758abdcfc7d28a78b5f22fe97e" target="_top">
+            Update README.md with new stable NixOS version information.
+          </a>
+        </p></li><li class="listitem"><p>
+          Set a release date in the release notes.
+        </p></li><li class="listitem"><p>
+          Change <code class="literal">stableBranch</code> to true and wait for channel to update.
+        </p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="at-final-release-time"></a>At final release time</h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist compact" style="list-style-type: disc; "><li class="listitem"><p>
+          <code class="literal">git tag -s -a -m "Release 15.09" 15.09</code>
+        </p></li><li class="listitem"><p>
+          Update http://nixos.org/nixos/download.html and http://nixos.org/nixos/manual in https://github.com/NixOS/nixos-org-configurations
+        </p></li><li class="listitem"><p>
+          Get number of commits for the release:
+          <code class="literal">git log release-14.04..release-14.12 --format=%an|wc -l</code>
+        </p></li><li class="listitem"><p>
+          Commits by contributor:
+          <code class="literal">git log release-14.04..release-14.12 --format=%an|sort|uniq -c|sort -rn</code>
+        </p></li><li class="listitem"><p>
+          Send an email to nix-devel to announce the release with above information. Best to check how previous email was formulated
+          to see what needs to be included.
+        </p></li></ul></div></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch-testing-installer.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-development.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="release-schedule.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 27. Testing the Installer </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Release schedule</td></tr></table></div></body></html>

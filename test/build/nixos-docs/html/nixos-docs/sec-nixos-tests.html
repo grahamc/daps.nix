@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Chapter 26. NixOS Tests</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-development.html" title="Part IV. Development" /><link rel="prev" href="sec-building-cd.html" title="Chapter 25. Building Your Own NixOS CD" /><link rel="next" href="sec-running-nixos-tests-interactively.html" title="Running Tests" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 26. NixOS Tests</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-building-cd.html">Prev</a> </td><th width="60%" align="center">Part IV. Development</th><td width="20%" align="right"> <a accesskey="n" href="sec-running-nixos-tests-interactively.html">Next</a></td></tr></table><hr /></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a id="sec-nixos-tests"></a>Chapter 26. NixOS Tests</h2></div></div></div><div class="toc"><p><strong>Table of Contents</strong></p><dl class="toc"><dt><span class="section"><a href="sec-nixos-tests.html#sec-writing-nixos-tests">Writing Tests</a></span></dt><dt><span class="section"><a href="sec-running-nixos-tests-interactively.html">Running Tests</a></span></dt><dt><span class="section"><a href="sec-running-nixos-tests.html">Running Tests interactively</a></span></dt></dl></div><p>When you add some feature to NixOS, you should write a test for
+it. NixOS tests are kept in the directory <code class="filename"><a class="filename" href="development-https://github.com/NixOS/nixpkgs/tree/master/nixos/tests" target="_top">nixos/tests</a></code>,
+and are executed (using Nix) by a testing framework that automatically
+starts one or more virtual machines containing the NixOS system(s)
+required for the test.</p><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-writing-nixos-tests"></a>Writing Tests</h2></div></div></div><p>A NixOS test is a Nix expression that has the following structure:
+
+</p><pre class="programlisting">
+import ./make-test.nix {
+
+  # Either the configuration of a single machine:
+  machine =
+    { config, pkgs, ... }:
+    { <em class="replaceable"><code>configuration…</code></em>
+    };
+
+  # Or a set of machines:
+  nodes =
+    { <em class="replaceable"><code>machine1</code></em> =
+        { config, pkgs, ... }: { <em class="replaceable"><code>…</code></em> };
+      <em class="replaceable"><code>machine2</code></em> =
+        { config, pkgs, ... }: { <em class="replaceable"><code>…</code></em> };
+      …
+    };
+
+  testScript =
+    ''
+      <em class="replaceable"><code>Perl code…</code></em>
+    '';
+}
+</pre><p>
+
+The attribute <code class="literal">testScript</code> is a bit of Perl code that
+executes the test (described below). During the test, it will start
+one or more virtual machines, the configuration of which is described
+by the attribute <code class="literal">machine</code> (if you need only one
+machine in your test) or by the attribute <code class="literal">nodes</code> (if
+you need multiple machines). For instance, <code class="filename"><a class="filename" href="development-https://github.com/NixOS/nixpkgs/blob/master/nixos/tests/login.nix" target="_top">login.nix</a></code>
+only needs a single machine to test whether users can log in on the
+virtual console, whether device ownership is correctly maintained when
+switching between consoles, and so on. On the other hand, <code class="filename"><a class="filename" href="development-https://github.com/NixOS/nixpkgs/blob/master/nixos/tests/nfs.nix" target="_top">nfs.nix</a></code>,
+which tests NFS client and server functionality in the Linux kernel
+(including whether locks are maintained across server crashes),
+requires three machines: a server and two clients.</p><p>There are a few special NixOS configuration options for test
+VMs:
+
+
+
+</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="option">virtualisation.memorySize</code></span></dt><dd><p>The memory of the VM in
+    megabytes.</p></dd><dt><span class="term"><code class="option">virtualisation.vlans</code></span></dt><dd><p>The virtual networks to which the VM is
+    connected. See <code class="filename"><a class="filename" href="development-https://github.com/NixOS/nixpkgs/blob/master/nixos/tests/nat.nix" target="_top">nat.nix</a></code>
+    for an example.</p></dd><dt><span class="term"><code class="option">virtualisation.writableStore</code></span></dt><dd><p>By default, the Nix store in the VM is not
+    writable. If you enable this option, a writable union file system
+    is mounted on top of the Nix store to make it appear
+    writable. This is necessary for tests that run Nix operations that
+    modify the store.</p></dd></dl></div><p>
+
+For more options, see the module <code class="filename"><a class="filename" href="development-https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/virtualisation/qemu-vm.nix" target="_top">qemu-vm.nix</a></code>.</p><p>The test script is a sequence of Perl statements that perform
+various actions, such as starting VMs, executing commands in the VMs,
+and so on. Each virtual machine is represented as an object stored in
+the variable <code class="literal">$<em class="replaceable"><code>name</code></em></code>,
+where <em class="replaceable"><code>name</code></em> is the identifier of the machine
+(which is just <code class="literal">machine</code> if you didn’t specify
+multiple machines using the <code class="literal">nodes</code> attribute). For
+instance, the following starts the machine, waits until it has
+finished booting, then executes a command and checks that the output
+is more-or-less correct:
+
+</p><pre class="programlisting">
+$machine-&gt;start;
+$machine-&gt;waitForUnit("default.target");
+$machine-&gt;succeed("uname") =~ /Linux/;
+</pre><p>
+
+The first line is actually unnecessary; machines are implicitly
+started when you first execute an action on them (such as
+<code class="literal">waitForUnit</code> or <code class="literal">succeed</code>). If you
+have multiple machines, you can speed up the test by starting them in
+parallel:
+
+</p><pre class="programlisting">
+startAll;
+</pre><p>
+
+</p><p>The following methods are available on machine objects:
+
+</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="methodname">start</code></span></dt><dd><p>Start the virtual machine. This method is
+    asynchronous — it does not wait for the machine to finish
+    booting.</p></dd><dt><span class="term"><code class="methodname">shutdown</code></span></dt><dd><p>Shut down the machine, waiting for the VM to
+    exit.</p></dd><dt><span class="term"><code class="methodname">crash</code></span></dt><dd><p>Simulate a sudden power failure, by telling the VM
+    to exit immediately.</p></dd><dt><span class="term"><code class="methodname">block</code></span></dt><dd><p>Simulate unplugging the Ethernet cable that
+    connects the machine to the other machines.</p></dd><dt><span class="term"><code class="methodname">unblock</code></span></dt><dd><p>Undo the effect of
+    <code class="methodname">block</code>.</p></dd><dt><span class="term"><code class="methodname">screenshot</code></span></dt><dd><p>Take a picture of the display of the virtual
+    machine, in PNG format. The screenshot is linked from the HTML
+    log.</p></dd><dt><span class="term"><code class="methodname">getScreenText</code></span></dt><dd><p>Return a textual representation of what is currently
+    visible on the machine's screen using optical character
+    recognition.</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>This requires passing <code class="option">enableOCR</code> to the test
+    attribute set.</p></div></dd><dt><span class="term"><code class="methodname">sendMonitorCommand</code></span></dt><dd><p>Send a command to the QEMU monitor. This is rarely
+    used, but allows doing stuff such as attaching virtual USB disks
+    to a running machine.</p></dd><dt><span class="term"><code class="methodname">sendKeys</code></span></dt><dd><p>Simulate pressing keys on the virtual keyboard,
+    e.g., <code class="literal">sendKeys("ctrl-alt-delete")</code>.</p></dd><dt><span class="term"><code class="methodname">sendChars</code></span></dt><dd><p>Simulate typing a sequence of characters on the
+    virtual keyboard, e.g., <code class="literal">sendKeys("foobar\n")</code>
+    will type the string <code class="literal">foobar</code> followed by the
+    Enter key.</p></dd><dt><span class="term"><code class="methodname">execute</code></span></dt><dd><p>Execute a shell command, returning a list
+    <code class="literal">(<em class="replaceable"><code>status</code></em>,
+    <em class="replaceable"><code>stdout</code></em>)</code>.</p></dd><dt><span class="term"><code class="methodname">succeed</code></span></dt><dd><p>Execute a shell command, raising an exception if
+    the exit status is not zero, otherwise returning the standard
+    output.</p></dd><dt><span class="term"><code class="methodname">fail</code></span></dt><dd><p>Like <code class="methodname">succeed</code>, but raising
+    an exception if the command returns a zero status.</p></dd><dt><span class="term"><code class="methodname">waitUntilSucceeds</code></span></dt><dd><p>Repeat a shell command with 1-second intervals
+    until it succeeds.</p></dd><dt><span class="term"><code class="methodname">waitUntilFails</code></span></dt><dd><p>Repeat a shell command with 1-second intervals
+    until it fails.</p></dd><dt><span class="term"><code class="methodname">waitForUnit</code></span></dt><dd><p>Wait until the specified systemd unit has reached
+    the “active” state.</p></dd><dt><span class="term"><code class="methodname">waitForFile</code></span></dt><dd><p>Wait until the specified file
+    exists.</p></dd><dt><span class="term"><code class="methodname">waitForOpenPort</code></span></dt><dd><p>Wait until a process is listening on the given TCP
+    port (on <code class="literal">localhost</code>, at least).</p></dd><dt><span class="term"><code class="methodname">waitForClosedPort</code></span></dt><dd><p>Wait until nobody is listening on the given TCP
+    port.</p></dd><dt><span class="term"><code class="methodname">waitForX</code></span></dt><dd><p>Wait until the X11 server is accepting
+    connections.</p></dd><dt><span class="term"><code class="methodname">waitForText</code></span></dt><dd><p>Wait until the supplied regular expressions matches
+    the textual contents of the screen by using optical character recognition
+    (see <code class="methodname">getScreenText</code>).</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>This requires passing <code class="option">enableOCR</code> to the test
+    attribute set.</p></div></dd><dt><span class="term"><code class="methodname">waitForWindow</code></span></dt><dd><p>Wait until an X11 window has appeared whose name
+    matches the given regular expression, e.g.,
+    <code class="literal">waitForWindow(qr/Terminal/)</code>.</p></dd></dl></div><p>
+
+</p></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-building-cd.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-development.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-running-nixos-tests-interactively.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 25. Building Your Own NixOS CD </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Running Tests</td></tr></table></div></body></html>

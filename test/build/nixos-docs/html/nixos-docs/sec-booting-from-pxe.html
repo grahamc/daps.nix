@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Booting from the “netboot” media (PXE)</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="sec-installation.html" title="Chapter 2. Installing NixOS" /><link rel="prev" href="sec-booting-from-usb.html" title="Booting from a USB Drive" /><link rel="next" href="sec-instaling-virtualbox-guest.html" title="Installing in a Virtualbox guest" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Booting from the <span class="quote">“<span class="quote">netboot</span>”</span> media (PXE)</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-booting-from-usb.html">Prev</a> </td><th width="60%" align="center">Chapter 2. Installing NixOS</th><td width="20%" align="right"> <a accesskey="n" href="sec-instaling-virtualbox-guest.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-booting-from-pxe"></a>Booting from the <span class="quote">“<span class="quote">netboot</span>”</span> media (PXE)</h2></div></div></div><p>
+  Advanced users may wish to install NixOS using an existing PXE or
+  iPXE setup.
+</p><p>
+  These instructions assume that you have an existing PXE or iPXE
+  infrastructure and simply want to add the NixOS installer as another
+  option. To build the necessary files from a recent version of
+  nixpkgs, you can run:
+</p><pre class="programlisting">
+nix-build -A netboot nixos/release.nix
+</pre><p>
+  This will create a <code class="literal">result</code> directory containing: *
+  <code class="literal">bzImage</code> – the Linux kernel *
+  <code class="literal">initrd</code> – the initrd file *
+  <code class="literal">netboot.ipxe</code> – an example ipxe script
+  demonstrating the appropriate kernel command line arguments for this
+  image
+</p><p>
+  If you’re using plain PXE, configure your boot loader to use the
+  <code class="literal">bzImage</code> and <code class="literal">initrd</code> files and
+  have it provide the same kernel command line arguments found in
+  <code class="literal">netboot.ipxe</code>.
+</p><p>
+  If you’re using iPXE, depending on how your HTTP/FTP/etc. server is
+  configured you may be able to use <code class="literal">netboot.ipxe</code>
+  unmodified, or you may need to update the paths to the files to
+  match your server’s directory layout
+</p><p>
+  In the future we may begin making these files available as build
+  products from hydra at which point we will update this documentation
+  with instructions on how to obtain them either for placing on a
+  dedicated TFTP server or to boot them directly over the internet.
+</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-booting-from-usb.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sec-installation.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-instaling-virtualbox-guest.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Booting from a USB Drive </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Installing in a Virtualbox guest</td></tr></table></div></body></html>

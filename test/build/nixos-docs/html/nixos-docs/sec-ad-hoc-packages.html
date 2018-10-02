@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Ad-Hoc Package Management</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="sec-package-management.html" title="Chapter 6. Package Management" /><link rel="prev" href="sec-package-management.html" title="Chapter 6. Package Management" /><link rel="next" href="sec-user-management.html" title="Chapter 7. User Management" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Ad-Hoc Package Management</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-package-management.html">Prev</a> </td><th width="60%" align="center">Chapter 6. Package Management</th><td width="20%" align="right"> <a accesskey="n" href="sec-user-management.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-ad-hoc-packages"></a>Ad-Hoc Package Management</h2></div></div></div><p>With the command <span class="command"><strong>nix-env</strong></span>, you can install and
+uninstall packages from the command line.  For instance, to install
+Mozilla Thunderbird:
+
+</p><pre class="screen">
+$ nix-env -iA nixos.thunderbird</pre><p>
+
+If you invoke this as root, the package is installed in the Nix
+profile <code class="filename">/nix/var/nix/profiles/default</code> and visible
+to all users of the system; otherwise, the package ends up in
+<code class="filename">/nix/var/nix/profiles/per-user/<em class="replaceable"><code>username</code></em>/profile</code>
+and is not visible to other users.  The <code class="option">-A</code> flag
+specifies the package by its attribute name; without it, the package
+is installed by matching against its package name
+(e.g. <code class="literal">thunderbird</code>).  The latter is slower because
+it requires matching against all available Nix packages, and is
+ambiguous if there are multiple matching packages.</p><p>Packages come from the NixOS channel.  You typically upgrade a
+package by updating to the latest version of the NixOS channel:
+</p><pre class="screen">
+$ nix-channel --update nixos
+</pre><p>
+and then running <code class="literal">nix-env -i</code> again.  Other packages
+in the profile are <span class="emphasis"><em>not</em></span> affected; this is the
+crucial difference with the declarative style of package management,
+where running <span class="command"><strong>nixos-rebuild switch</strong></span> causes all
+packages to be updated to their current versions in the NixOS channel.
+You can however upgrade all packages for which there is a newer
+version by doing:
+</p><pre class="screen">
+$ nix-env -u '*'
+</pre><p>
+</p><p>A package can be uninstalled using the <code class="option">-e</code>
+flag:
+</p><pre class="screen">
+$ nix-env -e thunderbird
+</pre><p>
+</p><p>Finally, you can roll back an undesirable
+<span class="command"><strong>nix-env</strong></span> action:
+</p><pre class="screen">
+$ nix-env --rollback
+</pre><p>
+</p><p><span class="command"><strong>nix-env</strong></span> has many more flags.  For details,
+see the
+<span class="citerefentry"><span class="refentrytitle">nix-env</span>(1)</span>
+manpage or the Nix manual.</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-package-management.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sec-package-management.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-user-management.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 6. Package Management </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 7. User Management</td></tr></table></div></body></html>

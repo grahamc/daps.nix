@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Appendix B. Release Notes</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="book-nixos-manual.html" title="NixOS Manual" /><link rel="prev" href="ch-options.html" title="Appendix A. Configuration Options" /><link rel="next" href="sec-release-17.03.html" title="Release 17.03 (“Gorilla”, 2017/03/31)" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Appendix B. Release Notes</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch-options.html">Prev</a> </td><th width="60%" align="center">NixOS Manual</th><td width="20%" align="right"> <a accesskey="n" href="sec-release-17.03.html">Next</a></td></tr></table><hr /></div><div class="appendix"><div class="titlepage"><div><div><h1 class="title"><a id="ch-release-notes"></a>Appendix B. Release Notes</h1></div></div></div><div class="toc"><p><strong>Table of Contents</strong></p><dl class="toc"><dt><span class="section"><a href="ch-release-notes.html#sec-release-17.09">Release 17.09 (“Hummingbird”, 2017/09/29)</a></span></dt><dd><dl><dt><span class="section"><a href="ch-release-notes.html#sec-release-17.09-highlights">Highlights</a></span></dt><dt><span class="section"><a href="ch-release-notes.html#sec-release-17.09-new-services">New Services</a></span></dt><dt><span class="section"><a href="ch-release-notes.html#sec-release-17.09-incompatibilities">Backward Incompatibilities</a></span></dt><dt><span class="section"><a href="ch-release-notes.html#sec-release-17.09-notable-changes">Other Notable Changes</a></span></dt></dl></dd><dt><span class="section"><a href="sec-release-17.03.html">Release 17.03 (“Gorilla”, 2017/03/31)</a></span></dt><dd><dl><dt><span class="section"><a href="sec-release-17.03.html#sec-release-17.03-highlights">Highlights</a></span></dt><dt><span class="section"><a href="sec-release-17.03.html#sec-release-17.03-new-services">New Services</a></span></dt><dt><span class="section"><a href="sec-release-17.03.html#sec-release-17.03-incompatibilities">Backward Incompatibilities</a></span></dt><dt><span class="section"><a href="sec-release-17.03.html#sec-release-17.03-notable-changes">Other Notable Changes</a></span></dt></dl></dd><dt><span class="section"><a href="sec-release-16.09.html">Release 16.09 (“Flounder”, 2016/09/30)</a></span></dt><dt><span class="section"><a href="sec-release-16.03.html">Release 16.03 (“Emu”, 2016/03/31)</a></span></dt><dt><span class="section"><a href="sec-release-15.09.html">Release 15.09 (“Dingo”, 2015/09/30)</a></span></dt><dt><span class="section"><a href="sec-release-14.12.html">Release 14.12 (“Caterpillar”, 2014/12/30)</a></span></dt><dt><span class="section"><a href="sec-release-14.04.html">Release 14.04 (“Baboon”, 2014/04/30)</a></span></dt><dt><span class="section"><a href="sec-release-13.10.html">Release 13.10 (“Aardvark”, 2013/10/31)</a></span></dt></dl></div><p>This section lists the release notes for each stable version of NixOS
+and current unstable revision.</p><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-release-17.09"></a>Release 17.09 (“Hummingbird”, 2017/09/29)</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="sec-release-17.09-highlights"></a>Highlights</h3></div></div></div><p>In addition to numerous new and upgraded packages, this release
+has the following highlights: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+      The GNOME version is now 3.24. KDE Plasma was upgraded to 5.10,
+      KDE Applications to 17.08.1 and KDE Frameworks to 5.37.
+    </p></li><li class="listitem"><p>
+      The user handling now keeps track of deallocated UIDs/GIDs. When a user
+      or group is revived, this allows it to be allocated the UID/GID it had before.
+      A consequence is that UIDs and GIDs are no longer reused.
+    </p></li><li class="listitem"><p>
+      The module option <code class="option">services.xserver.xrandrHeads</code> now
+      causes the first head specified in this list to be set as the primary
+      head. Apart from that, it's now possible to also set additional options
+      by using an attribute set, for example:
+</p><pre class="programlisting">
+{ services.xserver.xrandrHeads = [
+    "HDMI-0"
+    {
+      output = "DVI-0";
+      primary = true;
+      monitorConfig = ''
+        Option "Rotate" "right"
+      '';
+    }
+  ];
+}
+</pre><p>
+      This will set the <code class="literal">DVI-0</code> output to be the primary head,
+      even though <code class="literal">HDMI-0</code> is the first head in the list.
+    </p></li><li class="listitem"><p>
+      The handling of SSL in the <code class="literal">services.nginx</code> module has
+      been cleaned up, renaming the misnamed <code class="literal">enableSSL</code> to
+      <code class="literal">onlySSL</code> which reflects its original intention. This
+      is not to be used with the already existing <code class="literal">forceSSL</code>
+      which creates a second non-SSL virtual host redirecting to the SSL
+      virtual host. This by chance had worked earlier due to specific
+      implementation details. In case you had specified both please remove
+      the <code class="literal">enableSSL</code> option to keep the previous behaviour.
+    </p><p>
+      Another <code class="literal">addSSL</code> option has been introduced to configure
+      both a non-SSL virtual host and an SSL virtual host with the same
+      configuration.
+    </p><p>
+      Options to configure <code class="literal">resolver</code> options and
+      <code class="literal">upstream</code> blocks have been introduced. See their information
+      for further details.
+    </p><p>
+      The <code class="literal">port</code> option has been replaced by a more generic
+      <code class="literal">listen</code> option which makes it possible to specify
+      multiple addresses, ports and SSL configs dependant on the new SSL
+      handling mentioned above.
+    </p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="sec-release-17.09-new-services"></a>New Services</h3></div></div></div><p>The following new services were added since the last release:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">config/fonts/fontconfig-penultimate.nix</code></p></li><li class="listitem"><p><code class="literal">config/fonts/fontconfig-ultimate.nix</code></p></li><li class="listitem"><p><code class="literal">config/terminfo.nix</code></p></li><li class="listitem"><p><code class="literal">hardware/sensor/iio.nix</code></p></li><li class="listitem"><p><code class="literal">hardware/nitrokey.nix</code></p></li><li class="listitem"><p><code class="literal">hardware/raid/hpsa.nix</code></p></li><li class="listitem"><p><code class="literal">programs/browserpass.nix</code></p></li><li class="listitem"><p><code class="literal">programs/gnupg.nix</code></p></li><li class="listitem"><p><code class="literal">programs/qt5ct.nix</code></p></li><li class="listitem"><p><code class="literal">programs/slock.nix</code></p></li><li class="listitem"><p><code class="literal">programs/thefuck.nix</code></p></li><li class="listitem"><p><code class="literal">security/auditd.nix</code></p></li><li class="listitem"><p><code class="literal">security/lock-kernel-modules.nix</code></p></li><li class="listitem"><p><code class="literal">service-managers/docker.nix</code></p></li><li class="listitem"><p><code class="literal">service-managers/trivial.nix</code></p></li><li class="listitem"><p><code class="literal">services/admin/salt/master.nix</code></p></li><li class="listitem"><p><code class="literal">services/admin/salt/minion.nix</code></p></li><li class="listitem"><p><code class="literal">services/audio/slimserver.nix</code></p></li><li class="listitem"><p><code class="literal">services/cluster/kubernetes/default.nix</code></p></li><li class="listitem"><p><code class="literal">services/cluster/kubernetes/dns.nix</code></p></li><li class="listitem"><p><code class="literal">services/cluster/kubernetes/dashboard.nix</code></p></li><li class="listitem"><p><code class="literal">services/continuous-integration/hail.nix</code></p></li><li class="listitem"><p><code class="literal">services/databases/clickhouse.nix</code></p></li><li class="listitem"><p><code class="literal">services/databases/postage.nix</code></p></li><li class="listitem"><p><code class="literal">services/desktops/gnome3/gnome-disks.nix</code></p></li><li class="listitem"><p><code class="literal">services/desktops/gnome3/gpaste.nix</code></p></li><li class="listitem"><p><code class="literal">services/logging/SystemdJournal2Gelf.nix</code></p></li><li class="listitem"><p><code class="literal">services/logging/heartbeat.nix</code></p></li><li class="listitem"><p><code class="literal">services/logging/journalwatch.nix</code></p></li><li class="listitem"><p><code class="literal">services/logging/syslogd.nix</code></p></li><li class="listitem"><p><code class="literal">services/mail/mailhog.nix</code></p></li><li class="listitem"><p><code class="literal">services/mail/nullmailer.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/airsonic.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/autorandr.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/exhibitor.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/fstrim.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/gollum.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/irkerd.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/jackett.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/radarr.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/snapper.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/osquery.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/prometheus/collectd-exporter.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/prometheus/fritzbox-exporter.nix</code></p></li><li class="listitem"><p><code class="literal">services/network-filesystems/kbfs.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/dnscache.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/fireqos.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/iwd.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/keepalived/default.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/keybase.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/lldpd.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/matterbridge.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/squid.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/tinydns.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/xrdp.nix</code></p></li><li class="listitem"><p><code class="literal">services/security/shibboleth-sp.nix</code></p></li><li class="listitem"><p><code class="literal">services/security/sks.nix</code></p></li><li class="listitem"><p><code class="literal">services/security/sshguard.nix</code></p></li><li class="listitem"><p><code class="literal">services/security/torify.nix</code></p></li><li class="listitem"><p><code class="literal">services/security/usbguard.nix</code></p></li><li class="listitem"><p><code class="literal">services/security/vault.nix</code></p></li><li class="listitem"><p><code class="literal">services/system/earlyoom.nix</code></p></li><li class="listitem"><p><code class="literal">services/system/saslauthd.nix</code></p></li><li class="listitem"><p><code class="literal">services/web-apps/nexus.nix</code></p></li><li class="listitem"><p><code class="literal">services/web-apps/pgpkeyserver-lite.nix</code></p></li><li class="listitem"><p><code class="literal">services/web-apps/piwik.nix</code></p></li><li class="listitem"><p><code class="literal">services/web-servers/lighttpd/collectd.nix</code></p></li><li class="listitem"><p><code class="literal">services/web-servers/minio.nix</code></p></li><li class="listitem"><p><code class="literal">services/x11/display-managers/xpra.nix</code></p></li><li class="listitem"><p><code class="literal">services/x11/xautolock.nix</code></p></li><li class="listitem"><p><code class="literal">tasks/filesystems/bcachefs.nix</code></p></li><li class="listitem"><p><code class="literal">tasks/powertop.nix</code></p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="sec-release-17.09-incompatibilities"></a>Backward Incompatibilities</h3></div></div></div><p>When upgrading from a previous release, please be aware of the
+following incompatible changes:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+        <span class="strong"><strong>
+            In an Qemu-based virtualization environment, the network interface
+            names changed from i.e. <code class="literal">enp0s3</code> to
+            <code class="literal">ens3</code>.
+        </strong></span>
+    </p><p>
+        This is due to a kernel configuration change. The new naming
+        is consistent with those of other Linux distributions with
+        systemd. See
+        <a class="link" href="release-notes-https://github.com/NixOS/nixpkgs/issues/29197" target="_top">#29197</a>
+        for more information.
+    </p><p>
+        A machine is affected if the <code class="literal">virt-what</code> tool
+        either returns <code class="literal">qemu</code> or
+        <code class="literal">kvm</code> <span class="emphasis"><em>and</em></span> has
+        interface names used in any part of its NixOS configuration,
+        in particular if a static network configuration with
+        <code class="literal">networking.interfaces</code> is used.
+    </p><p>
+        Before rebooting affected machines, please ensure:
+        </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>
+              Change the interface names in your NixOS configuration.
+              The first interface will be called <code class="literal">ens3</code>,
+              the second one <code class="literal">ens8</code> and starting from there
+              incremented by 1.
+            </p></li><li class="listitem"><p>
+              After changing the interface names, rebuild your system with
+              <code class="literal">nixos-rebuild boot</code> to activate the new
+              configuration after a reboot. If you switch to the new
+              configuration right away you might lose network connectivity!
+              If using <code class="literal">nixops</code>, deploy with
+              <code class="literal">nixops deploy --force-reboot</code>.
+            </p></li></ul></div><p>
+    </p></li><li class="listitem"><p>
+      The following changes apply if the <code class="literal">stateVersion</code> is changed to 17.09 or higher.
+      For <code class="literal">stateVersion = "17.03"</code> or lower the old behavior is preserved.
+    </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>
+          The <code class="literal">postgres</code> default version was changed from 9.5 to 9.6.
+        </p></li><li class="listitem"><p>
+          The <code class="literal">postgres</code> superuser name has changed from <code class="literal">root</code> to <code class="literal">postgres</code> to more closely follow what other Linux distributions are doing.
+        </p></li><li class="listitem"><p>
+          The <code class="literal">postgres</code> default <code class="literal">dataDir</code> has changed from <code class="literal">/var/db/postgres</code> to <code class="literal">/var/lib/postgresql/$psqlSchema</code> where $psqlSchema is 9.6 for example.
+        </p></li><li class="listitem"><p>
+          The <code class="literal">mysql</code> default <code class="literal">dataDir</code> has changed from <code class="literal">/var/mysql</code> to <code class="literal">/var/lib/mysql</code>.
+        </p></li><li class="listitem"><p>
+          Radicale's default package has changed from 1.x to 2.x. Instructions to migrate can be found <a class="link" href="release-notes-http://radicale.org/1to2/" target="_top"> here </a>. It is also possible to use the newer version by setting the <code class="literal">package</code> to <code class="literal">radicale2</code>, which is done automatically when <code class="literal">stateVersion</code> is 17.09 or higher. The <code class="literal">extraArgs</code> option has been added to allow passing the data migration arguments specified in the instructions; see the <code class="filename"><a class="filename" href="https://github.com/NixOS/nixpkgs/blob/master/nixos/tests/radicale.nix" target="_top">radicale.nix</a></code> NixOS test for an example migration.
+        </p></li></ul></div></li><li class="listitem"><p>
+      The <code class="literal">aiccu</code> package was removed. This is due to SixXS
+      <a class="link" href="release-notes-https://www.sixxs.net/main/" target="_top"> sunsetting</a> its IPv6 tunnel.
+    </p></li><li class="listitem"><p>
+      The <code class="literal">fanctl</code> package and <code class="literal">fan</code> module
+      have been removed due to the developers not upstreaming their iproute2
+      patches and lagging with compatibility to recent iproute2 versions.
+    </p></li><li class="listitem"><p>
+      Top-level <code class="literal">idea</code> package collection was renamed.
+      All JetBrains IDEs are now at <code class="literal">jetbrains</code>.
+    </p></li><li class="listitem"><p>
+      <code class="literal">flexget</code>'s state database cannot be upgraded to its
+      new internal format, requiring removal of any existing
+      <code class="literal">db-config.sqlite</code> which will be automatically recreated.
+    </p></li><li class="listitem"><p>
+      The <code class="literal">ipfs</code> service now doesn't ignore the <code class="literal">dataDir</code> option anymore. If you've ever set this option to anything other than the default you'll have to either unset it (so the default gets used) or migrate the old data manually with
+</p><pre class="programlisting">
+dataDir=&lt;valueOfDataDir&gt;
+mv /var/lib/ipfs/.ipfs/* $dataDir
+rmdir /var/lib/ipfs/.ipfs
+</pre><p>
+    </p></li><li class="listitem"><p>
+      The <code class="literal">caddy</code> service was previously using an extra
+      <code class="literal">.caddy</code> directory in the data directory specified
+      with the <code class="literal">dataDir</code> option. The contents of the
+      <code class="literal">.caddy</code> directory are now expected to be in the
+      <code class="literal">dataDir</code>.
+    </p></li><li class="listitem"><p>
+      The <code class="literal">ssh-agent</code> user service is not started by default
+      anymore. Use <code class="literal">programs.ssh.startAgent</code> to enable it if
+      needed. There is also a new <code class="literal">programs.gnupg.agent</code>
+      module that creates a <code class="literal">gpg-agent</code> user service. It can
+      also serve as a SSH agent if <code class="literal">enableSSHSupport</code> is set.
+    </p></li><li class="listitem"><p>
+      The <code class="literal">services.tinc.networks.&lt;name&gt;.listenAddress</code>
+      option had a misleading name that did not correspond to its behavior. It
+      now correctly defines the ip to listen for incoming connections on. To
+      keep the previous behaviour, use
+      <code class="literal">services.tinc.networks.&lt;name&gt;.bindToAddress</code>
+      instead. Refer to the description of the options for more details.
+    </p></li><li class="listitem"><p>
+      <code class="literal">tlsdate</code> package and module were removed. This is due to the project
+      being dead and not building with openssl 1.1.
+    </p></li><li class="listitem"><p>
+      <code class="literal">wvdial</code> package and module were removed. This is due to the project
+      being dead and not building with openssl 1.1.
+    </p></li><li class="listitem"><p>
+      <code class="literal">cc-wrapper</code>'s setup-hook now exports a number of
+      environment variables corresponding to binutils binaries,
+      (e.g. <code class="envar">LD</code>, <code class="envar">STRIP</code>, <code class="envar">RANLIB</code>,
+      etc). This is done to prevent packages' build systems guessing, which is
+      harder to predict, especially when cross-compiling. However, some packages
+      have broken due to this—their build systems either not supporting, or
+      claiming to support without adequate testing, taking such environment
+      variables as parameters.
+    </p></li><li class="listitem"><p>
+      <code class="literal">services.firefox.syncserver</code> now runs by default as a
+      non-root user. To accomodate this change, the default sqlite database
+      location has also been changed. Migration should work automatically.
+      Refer to the description of the options for more details.
+    </p></li><li class="listitem"><p>
+      The <code class="literal">compiz</code> window manager and package was
+      removed. The system support had been broken for several years.
+    </p></li><li class="listitem"><p>
+      Touchpad support should now be enabled through
+      <code class="literal">libinput</code> as <code class="literal">synaptics</code> is
+      now deprecated. See the option
+      <code class="literal">services.xserver.libinput.enable</code>.
+    </p></li><li class="listitem"><p>
+      grsecurity/PaX support has been dropped, following upstream's
+      decision to cease free support.  See
+      <a class="link" href="release-notes-https://grsecurity.net/passing_the_baton.php" target="_top">
+      upstream's announcement</a> for more information.
+      No complete replacement for grsecurity/PaX is available presently.
+    </p></li><li class="listitem"><p>
+      <code class="literal">services.mysql</code> now has declarative
+      configuration of databases and users with the <code class="literal">ensureDatabases</code> and
+      <code class="literal">ensureUsers</code> options.
+    </p><p>
+      These options will never delete existing databases and users,
+      especially not when the value of the options are changed.
+    </p><p>
+      The MySQL users will be identified using
+      <a class="link" href="release-notes-https://mariadb.com/kb/en/library/authentication-plugin-unix-socket/" target="_top">
+        Unix socket authentication</a>. This authenticates the
+        Unix user with the same name only, and that without the need
+        for a password.
+    </p><p>
+      If you have previously created a MySQL <code class="literal">root</code>
+      user <span class="emphasis"><em>with a password</em></span>, you will need to add
+      <code class="literal">root</code> user for unix socket authentication
+      before using the new options. This can be done by running the
+      following SQL script:
+
+</p><pre class="programlisting">
+CREATE USER 'root'@'%' IDENTIFIED BY '';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
+-- Optionally, delete the password-authenticated user:
+-- DROP USER 'root'@'localhost';
+</pre><p>
+    </p></li><li class="listitem"><p>
+      <code class="literal">sha256</code> argument value of
+      <code class="literal">dockerTools.pullImage</code> expression must be
+      updated since the mechanism to download the image has been
+      changed. Skopeo is now used to pull the image instead of the
+      Docker daemon.
+    </p></li><li class="listitem"><p>
+      <code class="literal">services.mysqlBackup</code> now works by default
+      without any user setup, including for users other than
+      <code class="literal">mysql</code>.
+    </p><p>
+      By default, the <code class="literal">mysql</code> user is no longer the
+      user which performs the backup. Instead a system account
+      <code class="literal">mysqlbackup</code> is used.
+    </p><p>
+      The <code class="literal">mysqlBackup</code> service is also now using
+      systemd timers instead of <code class="literal">cron</code>.
+    </p><p>
+      Therefore, the <code class="literal">services.mysqlBackup.period</code>
+      option no longer exists, and has been replaced with
+      <code class="literal">services.mysqlBackup.calendar</code>, which is in
+      the format of <a class="link" href="release-notes-https://www.freedesktop.org/software/systemd/man/systemd.time.html#Calendar%20Events" target="_top">systemd.time(7)</a>.
+    </p><p>
+      If you expect to be sent an e-mail when the backup fails,
+      consider using a script which monitors the systemd journal for
+      errors. Regretfully, at present there is no built-in
+      functionality for this.
+    </p><p>
+      You can check that backups still work by running
+      <span class="command"><strong>systemctl start mysql-backup</strong></span> then
+      <span class="command"><strong>systemctl status mysql-backup</strong></span>.
+    </p></li><li class="listitem"><p>
+      Templated systemd services e.g <code class="literal">container@name</code> are
+      now handled currectly when switching to a new configuration, resulting
+      in them being reloaded.
+    </p></li><li class="listitem"><p>Steam: the <code class="literal">newStdcpp</code> parameter
+    was removed and should not be needed anymore.</p></li><li class="listitem"><p>
+      Redis has been updated to version 4 which mandates a cluster
+      mass-restart, due to changes in the network handling, in order
+      to ensure compatibility with networks NATing traffic.
+    </p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="sec-release-17.09-notable-changes"></a>Other Notable Changes</h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+      Modules can now be disabled by using <a class="link" href="release-notes-https://nixos.org/nixpkgs/manual/#sec-replace-modules" target="_top">
+      disabledModules</a>, allowing another to take it's place.  This can be
+      used to import a set of modules from another channel while keeping the
+      rest of the system on a stable release.
+    </p></li><li class="listitem"><p>
+      Updated to FreeType 2.7.1, including a new TrueType engine.
+      The new engine replaces the Infinality engine which was the default in
+      NixOS. The default font rendering settings are now provided by
+      fontconfig-penultimate, replacing fontconfig-ultimate; the new defaults
+      are less invasive and provide rendering that is more consistent with
+      other systems and hopefully with each font designer's intent. Some
+      system-wide configuration has been removed from the Fontconfig NixOS
+      module where user Fontconfig settings are available.
+    </p></li><li class="listitem"><p>
+      ZFS/SPL have been updated to 0.7.0, <code class="literal">zfsUnstable, splUnstable</code>
+      have therefore been removed.
+    </p></li><li class="listitem"><p>
+      The <code class="option">time.timeZone</code> option now allows the value
+      <code class="literal">null</code> in addition to timezone strings. This value
+      allows changing the timezone of a system imperatively using
+      <span class="command"><strong>timedatectl set-timezone</strong></span>. The default timezone
+      is still UTC.
+    </p></li><li class="listitem"><p>
+      Nixpkgs overlays may now be specified with a file as well as a directory. The
+      value of <code class="literal">&lt;nixpkgs-overlays&gt;</code> may be a file, and
+      <code class="filename">~/.config/nixpkgs/overlays.nix</code> can be used instead of the
+      <code class="filename">~/.config/nixpkgs/overlays</code> directory.
+    </p><p>
+      See the overlays chapter of the Nixpkgs manual for more details.
+    </p></li><li class="listitem"><p>
+      Definitions for <code class="filename">/etc/hosts</code> can now be specified
+      declaratively with <code class="literal">networking.hosts</code>.
+    </p></li><li class="listitem"><p>
+      Two new options have been added to the installer loader, in addition
+      to the default having changed. The kernel log verbosity has been lowered
+      to the upstream default for the default options, in order to not spam
+      the console when e.g. joining a network.
+    </p><p>
+      This therefore leads to adding a new <code class="literal">debug</code> option
+      to set the log level to the previous verbose mode, to make debugging
+      easier, but still accessible easily.
+    </p><p>
+      Additionally a <code class="literal">copytoram</code> option has been added,
+      which makes it possible to remove the install medium after booting.
+      This allows tethering from your phone after booting from it.
+    </p></li><li class="listitem"><p>
+      <code class="literal">services.gitlab-runner.configOptions</code> has been added
+      to specify the configuration of gitlab-runners declaratively.
+    </p></li><li class="listitem"><p>
+      <code class="literal">services.jenkins.plugins</code> has been added
+      to install plugins easily, this can be generated with jenkinsPlugins2nix.
+    </p></li><li class="listitem"><p>
+      <code class="literal">services.postfix.config</code> has been added
+      to specify the main.cf with NixOS options. Additionally other options
+      have been added to the postfix module and has been improved further.
+    </p></li><li class="listitem"><p>
+      The GitLab package and module have been updated to the latest 10.0
+      release.
+    </p></li><li class="listitem"><p>
+      The <code class="literal">systemd-boot</code> boot loader now lists the NixOS
+      version, kernel version and build date of all bootable generations.
+    </p></li><li class="listitem"><p>
+      The dnscrypt-proxy service now defaults to using a random upstream resolver,
+      selected from the list of public non-logging resolvers with DNSSEC support.
+      Existing configurations can be migrated to this mode of operation by
+      omitting the <code class="option">services.dnscrypt-proxy.resolverName</code> option
+      or setting it to <code class="literal">"random"</code>.
+    </p></li></ul></div></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch-options.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="book-nixos-manual.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-release-17.03.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Appendix A. Configuration Options </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Release 17.03 (“Gorilla”, 2017/03/31)</td></tr></table></div></body></html>

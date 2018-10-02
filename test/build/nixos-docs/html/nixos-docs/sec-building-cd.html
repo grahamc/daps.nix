@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Chapter 25. Building Your Own NixOS CD</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-development.html" title="Part IV. Development" /><link rel="prev" href="ch24s04.html" title="Adding a Topic to the Book" /><link rel="next" href="sec-nixos-tests.html" title="Chapter 26. NixOS Tests" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 25. Building Your Own NixOS CD</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch24s04.html">Prev</a> </td><th width="60%" align="center">Part IV. Development</th><td width="20%" align="right"> <a accesskey="n" href="sec-nixos-tests.html">Next</a></td></tr></table><hr /></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a id="sec-building-cd"></a>Chapter 25. Building Your Own NixOS CD</h2></div></div></div><p>Building a NixOS CD is as easy as configuring your own computer. The
+idea is to use another module which will replace
+your <code class="filename">configuration.nix</code> to configure the system that
+would be installed on the CD.</p><p>Default CD/DVD configurations are available
+inside <code class="filename">nixos/modules/installer/cd-dvd</code>.
+
+</p><pre class="screen">
+$ git clone https://github.com/NixOS/nixpkgs.git
+$ cd nixpkgs/nixos
+$ nix-build -A config.system.build.isoImage -I nixos-config=modules/installer/cd-dvd/installation-cd-minimal.nix default.nix</pre><p>
+
+</p><p>Before burning your CD/DVD, you can check the content of the image by mounting anywhere like
+suggested by the following command:
+
+</p><pre class="screen">
+# mount -o loop -t iso9660 ./result/iso/cd.iso /mnt/iso</pre><p>
+
+</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch24s04.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-development.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-nixos-tests.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Adding a Topic to the Book </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 26. NixOS Tests</td></tr></table></div></body></html>

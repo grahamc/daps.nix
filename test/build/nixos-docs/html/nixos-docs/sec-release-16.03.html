@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Release 16.03 (“Emu”, 2016/03/31)</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-release-notes.html" title="Appendix B. Release Notes" /><link rel="prev" href="sec-release-16.09.html" title="Release 16.09 (“Flounder”, 2016/09/30)" /><link rel="next" href="sec-release-15.09.html" title="Release 15.09 (“Dingo”, 2015/09/30)" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Release 16.03 (“Emu”, 2016/03/31)</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-release-16.09.html">Prev</a> </td><th width="60%" align="center">Appendix B. Release Notes</th><td width="20%" align="right"> <a accesskey="n" href="sec-release-15.09.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-release-16.03"></a>Release 16.03 (“Emu”, 2016/03/31)</h2></div></div></div><p>In addition to numerous new and upgraded packages, this release
+has the following highlights:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Systemd 229, bringing <a class="link" href="release-notes-https://github.com/systemd/systemd/blob/v229/NEWS" target="_top">numerous
+    improvements</a> over 217.</p></li><li class="listitem"><p>Linux 4.4 (was 3.18).</p></li><li class="listitem"><p>GCC 5.3 (was 4.9). Note that GCC 5 <a class="link" href="release-notes-https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html" target="_top">changes
+    the C++ ABI in an incompatible way</a>; this may cause problems
+    if you try to link objects compiled with different versions of
+    GCC.</p></li><li class="listitem"><p>Glibc 2.23 (was 2.21).</p></li><li class="listitem"><p>Binutils 2.26 (was 2.23.1). See #909</p></li><li class="listitem"><p>Improved support for ensuring <a class="link" href="release-notes-https://reproducible-builds.org/" target="_top">bitwise reproducible
+    builds</a>. For example, <code class="literal">stdenv</code> now sets the
+    environment variable <code class="envar"><a class="envar" href="release-notes-https://reproducible-builds.org/specs/source-date-epoch/" target="_top">SOURCE_DATE_EPOCH</a></code>
+    to a deterministic value, and Nix has <a class="link" href="release-notes-http://nixos.org/nix/manual/#ssec-relnotes-1.11" target="_top">gained
+    an option</a> to repeat a build a number of times to test
+    determinism. An ongoing project, the goal of exact reproducibility
+    is to allow binaries to be verified independently (e.g., a user
+    might only trust binaries that appear in three independent binary
+    caches).</p></li><li class="listitem"><p>Perl 5.22.</p></li></ul></div><p>The following new services were added since the last release:
+
+  </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">services/monitoring/longview.nix</code></p></li><li class="listitem"><p><code class="literal">hardware/video/webcam/facetimehd.nix</code></p></li><li class="listitem"><p><code class="literal">i18n/input-method/default.nix</code></p></li><li class="listitem"><p><code class="literal">i18n/input-method/fcitx.nix</code></p></li><li class="listitem"><p><code class="literal">i18n/input-method/ibus.nix</code></p></li><li class="listitem"><p><code class="literal">i18n/input-method/nabi.nix</code></p></li><li class="listitem"><p><code class="literal">i18n/input-method/uim.nix</code></p></li><li class="listitem"><p><code class="literal">programs/fish.nix</code></p></li><li class="listitem"><p><code class="literal">security/acme.nix</code></p></li><li class="listitem"><p><code class="literal">security/audit.nix</code></p></li><li class="listitem"><p><code class="literal">security/oath.nix</code></p></li><li class="listitem"><p><code class="literal">services/hardware/irqbalance.nix</code></p></li><li class="listitem"><p><code class="literal">services/mail/dspam.nix</code></p></li><li class="listitem"><p><code class="literal">services/mail/opendkim.nix</code></p></li><li class="listitem"><p><code class="literal">services/mail/postsrsd.nix</code></p></li><li class="listitem"><p><code class="literal">services/mail/rspamd.nix</code></p></li><li class="listitem"><p><code class="literal">services/mail/rmilter.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/autofs.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/bepasty.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/calibre-server.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/cfdyndns.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/gammu-smsd.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/mathics.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/matrix-synapse.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/octoprint.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/hdaps.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/heapster.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/longview.nix</code></p></li><li class="listitem"><p><code class="literal">services/network-filesystems/netatalk.nix</code></p></li><li class="listitem"><p><code class="literal">services/network-filesystems/xtreemfs.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/autossh.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/dnschain.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/gale.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/miniupnpd.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/namecoind.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/ostinato.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/pdnsd.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/shairport-sync.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/supplicant.nix</code></p></li><li class="listitem"><p><code class="literal">services/search/kibana.nix</code></p></li><li class="listitem"><p><code class="literal">services/security/haka.nix</code></p></li><li class="listitem"><p><code class="literal">services/security/physlock.nix</code></p></li><li class="listitem"><p><code class="literal">services/web-apps/pump.io.nix</code></p></li><li class="listitem"><p><code class="literal">services/x11/hardware/libinput.nix</code></p></li><li class="listitem"><p><code class="literal">services/x11/window-managers/windowlab.nix</code></p></li><li class="listitem"><p><code class="literal">system/boot/initrd-network.nix</code></p></li><li class="listitem"><p><code class="literal">system/boot/initrd-ssh.nix</code></p></li><li class="listitem"><p><code class="literal">system/boot/loader/loader.nix</code></p></li><li class="listitem"><p><code class="literal">system/boot/networkd.nix</code></p></li><li class="listitem"><p><code class="literal">system/boot/resolved.nix</code></p></li><li class="listitem"><p><code class="literal">virtualisation/lxd.nix</code></p></li><li class="listitem"><p><code class="literal">virtualisation/rkt.nix</code></p></li></ul></div><p>
+</p><p>When upgrading from a previous release, please be aware of the
+following incompatible changes:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>We no longer produce graphical ISO images and VirtualBox
+    images for <code class="literal">i686-linux</code>. A minimal ISO image is
+    still provided.</p></li><li class="listitem"><p>Firefox and similar browsers are now <span class="emphasis"><em>wrapped by default</em></span>.
+    The package and attribute names are plain <code class="literal">firefox</code>
+    or <code class="literal">midori</code>, etc.  Backward-compatibility attributes were set up,
+    but note that <span class="command"><strong>nix-env -u</strong></span> will <span class="emphasis"><em>not</em></span> update
+    your current <code class="literal">firefox-with-plugins</code>;
+    you have to uninstall it and install <code class="literal">firefox</code> instead.</p></li><li class="listitem"><p><span class="command"><strong>wmiiSnap</strong></span> has been replaced with
+    <span class="command"><strong>wmii_hg</strong></span>, but
+    <span class="command"><strong>services.xserver.windowManager.wmii.enable</strong></span> has
+    been updated respectively so this only affects you if you have
+    explicitly installed <span class="command"><strong>wmiiSnap</strong></span>.
+    </p></li><li class="listitem"><p><code class="literal">jobs</code> NixOS option has been removed. It served as
+    compatibility layer between Upstart jobs and SystemD services. All services
+    have been rewritten to use <code class="literal">systemd.services</code></p></li><li class="listitem"><p><span class="command"><strong>wmiimenu</strong></span> is removed, as it has been
+    removed by the developers upstream. Use <span class="command"><strong>wimenu</strong></span>
+    from the <span class="command"><strong>wmii-hg</strong></span> package.</p></li><li class="listitem"><p>Gitit is no longer automatically added to the module list in
+    NixOS and as such there will not be any manual entries for it. You
+    will need to add an import statement to your NixOS configuration
+    in order to use it, e.g.
+
+</p><pre class="programlisting">
+{
+  imports = [ &lt;nixpkgs/nixos/modules/services/misc/gitit.nix&gt; ];
+}
+</pre><p>
+
+    will include the Gitit service configuration options.</p></li><li class="listitem"><p><span class="command"><strong>nginx</strong></span> does not accept flags for enabling and
+    disabling modules anymore. Instead it accepts <code class="literal">modules</code>
+    argument, which is a list of modules to be built in. All modules now
+    reside in <code class="literal">nginxModules</code> set. Example configuration:
+
+</p><pre class="programlisting">
+nginx.override {
+  modules = [ nginxModules.rtmp nginxModules.dav nginxModules.moreheaders ];
+}
+</pre><p>
+    </p></li><li class="listitem"><p><span class="command"><strong>s3sync</strong></span> is removed, as it hasn't been
+    developed by upstream for 4 years and only runs with ruby 1.8.
+    For an actively-developer alternative look at
+    <span class="command"><strong>tarsnap</strong></span> and others.
+    </p></li><li class="listitem"><p><span class="command"><strong>ruby_1_8</strong></span> has been removed as it's not
+    supported from upstream anymore and probably contains security
+    issues.
+    </p></li><li class="listitem"><p><code class="literal">tidy-html5</code> package is removed.
+    Upstream only provided <code class="literal">(lib)tidy5</code> during development,
+    and now they went back to <code class="literal">(lib)tidy</code> to work as a drop-in
+    replacement of the original package that has been unmaintained for years.
+    You can (still) use the <code class="literal">html-tidy</code> package, which got updated
+    to a stable release from this new upstream.</p></li><li class="listitem"><p><code class="literal">extraDeviceOptions</code> argument is removed
+    from <code class="literal">bumblebee</code> package. Instead there are
+    now two separate arguments: <code class="literal">extraNvidiaDeviceOptions</code>
+    and <code class="literal">extraNouveauDeviceOptions</code> for setting
+    extra X11 options for nvidia and nouveau drivers, respectively.
+    </p></li><li class="listitem"><p>The <code class="literal">Ctrl+Alt+Backspace</code> key combination
+    no longer kills the X server by default.
+    There's a new option <code class="option">services.xserver.enableCtrlAltBackspace</code>
+    allowing to enable the combination again.
+    </p></li><li class="listitem"><p><code class="literal">emacsPackagesNg</code> now contains all packages
+    from the ELPA, MELPA, and MELPA Stable repositories.
+    </p></li><li class="listitem"><p>Data directory for Postfix MTA server is moved from
+    <code class="filename">/var/postfix</code> to <code class="filename">/var/lib/postfix</code>.
+    Old configurations are migrated automatically. <code class="literal">service.postfix</code>
+    module has also received many improvements, such as correct directories' access
+    rights, new <code class="literal">aliasFiles</code> and <code class="literal">mapFiles</code>
+    options and more.</p></li><li class="listitem"><p>Filesystem options should now be configured as a list of strings, not
+    a comma-separated string. The old style will continue to work, but print a
+    warning, until the 16.09 release. An example of the new style:
+
+</p><pre class="programlisting">
+fileSystems."/example" = {
+  device = "/dev/sdc";
+  fsType = "btrfs";
+  options = [ "noatime" "compress=lzo" "space_cache" "autodefrag" ];
+};
+</pre><p>
+    </p></li><li class="listitem"><p>CUPS, installed by <code class="literal">services.printing</code> module, now
+    has its data directory in <code class="filename">/var/lib/cups</code>. Old
+    configurations from <code class="filename">/etc/cups</code> are moved there
+    automatically, but there might be problems. Also configuration options
+    <code class="literal">services.printing.cupsdConf</code> and
+    <code class="literal">services.printing.cupsdFilesConf</code> were removed
+    because they had been allowing one to override configuration variables
+    required for CUPS to work at all on NixOS. For most use cases,
+    <code class="literal">services.printing.extraConf</code> and new option
+    <code class="literal">services.printing.extraFilesConf</code> should be enough;
+    if you encounter a situation when they are not, please file a bug.</p><p>There are also Gutenprint improvements; in particular, a new option
+    <code class="literal">services.printing.gutenprint</code> is added to enable automatic
+    updating of Gutenprint PPMs; it's greatly recommended to enable it instead
+    of adding <code class="literal">gutenprint</code> to the <code class="literal">drivers</code> list.
+    </p></li><li class="listitem"><p><code class="literal">services.xserver.vaapiDrivers</code> has been removed. Use
+    <code class="literal">hardware.opengl.extraPackages{,32}</code> instead. You can
+    also specify VDPAU drivers there.</p></li><li class="listitem"><p>
+    <code class="literal">programs.ibus</code> moved to <code class="literal">i18n.inputMethod.ibus</code>.
+    The option <code class="literal">programs.ibus.plugins</code> changed to <code class="literal">i18n.inputMethod.ibus.engines</code>
+    and the option to enable ibus changed from <code class="literal">programs.ibus.enable</code> to
+    <code class="literal">i18n.inputMethod.enabled</code>.
+    <code class="literal">i18n.inputMethod.enabled</code> should be set to the used input method name,
+    <code class="literal">"ibus"</code> for ibus.
+    An example of the new style:
+
+</p><pre class="programlisting">
+i18n.inputMethod.enabled = "ibus";
+i18n.inputMethod.ibus.engines = with pkgs.ibus-engines; [ anthy mozc ];
+</pre><p>
+
+That is equivalent to the old version:
+
+</p><pre class="programlisting">
+programs.ibus.enable = true;
+programs.ibus.plugins = with pkgs; [ ibus-anthy mozc ];
+</pre><p>
+
+    </p></li><li class="listitem"><p><code class="literal">services.udev.extraRules</code> option now writes rules
+    to <code class="filename">99-local.rules</code> instead of <code class="filename">10-local.rules</code>.
+    This makes all the user rules apply after others, so their results wouldn't be
+    overriden by anything else.</p></li><li class="listitem"><p>Large parts of the <code class="literal">services.gitlab</code> module has been
+    been rewritten. There are new configuration options available. The
+    <code class="literal">stateDir</code> option was renamned to
+    <code class="literal">statePath</code> and the <code class="literal">satellitesDir</code> option
+    was removed. Please review the currently available options.</p></li><li class="listitem"><p>
+    The option <code class="option">services.nsd.zones.&lt;name&gt;.data</code> no
+    longer interpret the dollar sign ($) as a shell variable, as such it
+    should not be escaped anymore.  Thus the following zone data:
+    </p><pre class="programlisting">
+\$ORIGIN example.com.
+\$TTL 1800
+@       IN      SOA     ns1.vpn.nbp.name.      admin.example.com. (
+    </pre><p>
+    Should modified to look like the actual file expected by nsd:
+    </p><pre class="programlisting">
+$ORIGIN example.com.
+$TTL 1800
+@       IN      SOA     ns1.vpn.nbp.name.      admin.example.com. (
+    </pre></li><li class="listitem"><p>
+    <code class="literal">service.syncthing.dataDir</code> options now has to point
+    to exact folder where syncthing is writing to. Example configuration should
+    look something like:
+    </p><pre class="programlisting">
+services.syncthing = {
+    enable = true;
+    dataDir = "/home/somebody/.syncthing";
+    user = "somebody";
+};
+    </pre></li><li class="listitem"><p>
+      <code class="literal">networking.firewall.allowPing</code> is now enabled by
+      default. Users are encouraged to configure an appropriate rate limit for
+      their machines using the Kernel interface at
+      <code class="filename">/proc/sys/net/ipv4/icmp_ratelimit</code> and
+      <code class="filename">/proc/sys/net/ipv6/icmp/ratelimit</code> or using the
+      firewall itself, i.e. by setting the NixOS option
+      <code class="literal">networking.firewall.pingLimit</code>.
+    </p></li><li class="listitem"><p>
+      Systems with some broadcom cards used to result into a generated config
+      that is no longer accepted. If you get errors like
+      </p><pre class="screen">error: path ‘/nix/store/*-broadcom-sta-*’ does not exist and cannot be created</pre><p>
+      you should either re-run <span class="command"><strong>nixos-generate-config</strong></span> or manually replace
+      <code class="literal">"${config.boot.kernelPackages.broadcom_sta}"</code>
+      by
+      <code class="literal">config.boot.kernelPackages.broadcom_sta</code>
+      in your <code class="filename">/etc/nixos/hardware-configuration.nix</code>.
+      More discussion is on <a class="link" href="release-notes-https://github.com/NixOS/nixpkgs/pull/12595" target="_top">
+      the github issue</a>.
+    </p></li><li class="listitem"><p>
+      The <code class="literal">services.xserver.startGnuPGAgent</code> option has been removed.
+      GnuPG 2.1.x changed the way the gpg-agent works, and that new approach no
+      longer requires (or even supports) the "start everything as a child of the
+      agent" scheme we've implemented in NixOS for older versions.
+      To configure the gpg-agent for your X session, add the following code to
+      <code class="filename">~/.bashrc</code> or some file that’s sourced when your shell is started:
+    </p><pre class="programlisting">
+GPG_TTY=$(tty)
+export GPG_TTY
+    </pre><p>
+      If you want to use gpg-agent for SSH, too, add the following to your session
+      initialization (e.g. <code class="literal">displayManager.sessionCommands</code>)
+    </p><pre class="programlisting">
+gpg-connect-agent /bye
+unset SSH_AGENT_PID
+export SSH_AUTH_SOCK="''${HOME}/.gnupg/S.gpg-agent.ssh"
+    </pre><p>
+      and make sure that
+    </p><pre class="programlisting">
+enable-ssh-support
+    </pre><p>
+      is included in your <code class="filename">~/.gnupg/gpg-agent.conf</code>.
+      You will need to use <span class="command"><strong>ssh-add</strong></span> to re-add your ssh keys.
+      If gpg’s automatic transformation of the private keys to the new format fails,
+      you will need to re-import your private keyring as well:
+    </p><pre class="programlisting">
+gpg --import ~/.gnupg/secring.gpg
+    </pre><p>
+    The <span class="command"><strong>gpg-agent(1)</strong></span> man page has more details about this subject,
+    i.e. in the "EXAMPLES" section.
+    </p></li></ul></div><p>Other notable improvements:
+
+</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">ejabberd</code> module is brought back and now works on
+    NixOS.</p></li><li class="listitem"><p>Input method support was improved. New NixOS modules (fcitx, nabi and uim),
+    fcitx engines (chewing, hangul, m17n, mozc and table-other) and ibus engines (hangul and m17n)
+    have been added.</p></li></ul></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-release-16.09.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-release-notes.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-release-15.09.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Release 16.09 (“Flounder”, 2016/09/30) </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Release 15.09 (“Dingo”, 2015/09/30)</td></tr></table></div></body></html>

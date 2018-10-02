@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Release 15.09 (“Dingo”, 2015/09/30)</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-release-notes.html" title="Appendix B. Release Notes" /><link rel="prev" href="sec-release-16.03.html" title="Release 16.03 (“Emu”, 2016/03/31)" /><link rel="next" href="sec-release-14.12.html" title="Release 14.12 (“Caterpillar”, 2014/12/30)" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Release 15.09 (“Dingo”, 2015/09/30)</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-release-16.03.html">Prev</a> </td><th width="60%" align="center">Appendix B. Release Notes</th><td width="20%" align="right"> <a accesskey="n" href="sec-release-14.12.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-release-15.09"></a>Release 15.09 (“Dingo”, 2015/09/30)</h2></div></div></div><p>In addition to numerous new and upgraded packages, this release
+has the following highlights:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The <a class="link" href="release-notes-http://haskell.org/" target="_top">Haskell</a>
+    packages infrastructure has been re-designed from the ground up
+    ("Haskell NG"). NixOS now distributes the latest version
+    of every single package registered on <a class="link" href="release-notes-http://hackage.haskell.org/" target="_top">Hackage</a> -- well in
+    excess of 8,000 Haskell packages. Detailed instructions on how to
+    use that infrastructure can be found in the <a class="link" href="release-notes-http://nixos.org/nixpkgs/manual/#users-guide-to-the-haskell-infrastructure" target="_top">User's
+    Guide to the Haskell Infrastructure</a>. Users migrating from an
+    earlier release may find helpful information below, in the list of
+    backwards-incompatible changes. Furthermore, we distribute 51(!)
+    additional Haskell package sets that provide every single <a class="link" href="release-notes-http://www.stackage.org/" target="_top">LTS Haskell</a> release
+    since version 0.0 as well as the most recent <a class="link" href="release-notes-http://www.stackage.org/" target="_top">Stackage Nightly</a>
+    snapshot. The announcement <a class="link" href="release-notes-https://nixos.org/nix-dev/2015-September/018138.html" target="_top">"Full
+    Stackage Support in Nixpkgs"</a> gives additional
+    details.</p></li><li class="listitem"><p>Nix has been updated to version 1.10, which among other
+    improvements enables cryptographic signatures on binary caches for
+    improved security.</p></li><li class="listitem"><p>You can now keep your NixOS system up to date automatically
+    by setting
+
+</p><pre class="programlisting">
+system.autoUpgrade.enable = true;
+</pre><p>
+
+    This will cause the system to periodically check for updates in
+    your current channel and run <span class="command"><strong>nixos-rebuild</strong></span>.</p></li><li class="listitem"><p>This release is based on Glibc 2.21, GCC 4.9 and Linux
+    3.18.</p></li><li class="listitem"><p>GNOME has been upgraded to 3.16.
+    </p></li><li class="listitem"><p>Xfce has been upgraded to 4.12.
+    </p></li><li class="listitem"><p>KDE 5 has been upgraded to KDE Frameworks 5.10,
+      Plasma 5.3.2 and Applications 15.04.3.
+      KDE 4 has been updated to kdelibs-4.14.10.
+    </p></li><li class="listitem"><p>E19 has been upgraded to 0.16.8.15.
+    </p></li></ul></div><p>The following new services were added since the last release:
+
+  </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">services/mail/exim.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/apache-kafka.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/canto-daemon.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/confd.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/devmon.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/gitit.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/ihaskell.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/mbpfan.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/mediatomb.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/mwlib.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/parsoid.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/plex.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/ripple-rest.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/ripple-data-api.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/subsonic.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/sundtek.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/cadvisor.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/das_watchdog.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/grafana.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/riemann-tools.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/teamviewer.nix</code></p></li><li class="listitem"><p><code class="literal">services/network-filesystems/u9fs.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/aiccu.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/asterisk.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/bird.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/charybdis.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/docker-registry-server.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/fan.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/firefox/sync-server.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/gateone.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/heyefi.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/i2p.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/lambdabot.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/mstpd.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/nix-serve.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/nylon.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/racoon.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/skydns.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/shout.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/softether.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/sslh.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/tinc.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/tlsdated.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/tox-bootstrapd.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/tvheadend.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/zerotierone.nix</code></p></li><li class="listitem"><p><code class="literal">services/scheduling/marathon.nix</code></p></li><li class="listitem"><p><code class="literal">services/security/fprintd.nix</code></p></li><li class="listitem"><p><code class="literal">services/security/hologram.nix</code></p></li><li class="listitem"><p><code class="literal">services/security/munge.nix</code></p></li><li class="listitem"><p><code class="literal">services/system/cloud-init.nix</code></p></li><li class="listitem"><p><code class="literal">services/web-servers/shellinabox.nix</code></p></li><li class="listitem"><p><code class="literal">services/web-servers/uwsgi.nix</code></p></li><li class="listitem"><p><code class="literal">services/x11/unclutter.nix</code></p></li><li class="listitem"><p><code class="literal">services/x11/display-managers/sddm.nix</code></p></li><li class="listitem"><p><code class="literal">system/boot/coredump.nix</code></p></li><li class="listitem"><p><code class="literal">system/boot/loader/loader.nix</code></p></li><li class="listitem"><p><code class="literal">system/boot/loader/generic-extlinux-compatible</code></p></li><li class="listitem"><p><code class="literal">system/boot/networkd.nix</code></p></li><li class="listitem"><p><code class="literal">system/boot/resolved.nix</code></p></li><li class="listitem"><p><code class="literal">system/boot/timesyncd.nix</code></p></li><li class="listitem"><p><code class="literal">tasks/filesystems/exfat.nix</code></p></li><li class="listitem"><p><code class="literal">tasks/filesystems/ntfs.nix</code></p></li><li class="listitem"><p><code class="literal">tasks/filesystems/vboxsf.nix</code></p></li><li class="listitem"><p><code class="literal">virtualisation/virtualbox-host.nix</code></p></li><li class="listitem"><p><code class="literal">virtualisation/vmware-guest.nix</code></p></li><li class="listitem"><p><code class="literal">virtualisation/xen-dom0.nix</code></p></li></ul></div><p>
+</p><p>When upgrading from a previous release, please be aware of the
+following incompatible changes:
+
+</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="command"><strong>sshd</strong></span> no longer supports DSA and ECDSA
+host keys by default. If you have existing systems with such host keys
+and want to continue to use them, please set
+
+</p><pre class="programlisting">
+system.stateVersion = "14.12";
+</pre><p>
+
+The new option <code class="option">system.stateVersion</code> ensures that
+certain configuration changes that could break existing systems (such
+as the <span class="command"><strong>sshd</strong></span> host key setting) will maintain
+compatibility with the specified NixOS release. NixOps sets the state
+version of existing deployments automatically.</p></li><li class="listitem"><p><span class="command"><strong>cron</strong></span> is no longer enabled by
+default, unless you have a non-empty
+<code class="option">services.cron.systemCronJobs</code>. To force
+<span class="command"><strong>cron</strong></span> to be enabled, set
+<code class="option">services.cron.enable = true</code>.</p></li><li class="listitem"><p>Nix now requires binary caches to be cryptographically
+signed. If you have unsigned binary caches that you want to continue
+to use, you should set <code class="option">nix.requireSignedBinaryCaches =
+false</code>.</p></li><li class="listitem"><p>Steam now doesn't need root rights to work. Instead of using
+<code class="literal">*-steam-chrootenv</code>, you should now just run <code class="literal">steam</code>.
+<code class="literal">steamChrootEnv</code> package was renamed to <code class="literal">steam</code>,
+and old <code class="literal">steam</code> package -- to <code class="literal">steamOriginal</code>.
+</p></li><li class="listitem"><p>CMPlayer has been renamed to bomi upstream. Package
+<code class="literal">cmplayer</code> was accordingly renamed to
+<code class="literal">bomi</code> </p></li><li class="listitem"><p>Atom Shell has been renamed to Electron upstream.  Package <code class="literal">atom-shell</code>
+was accordingly renamed to <code class="literal">electron</code>
+</p></li><li class="listitem"><p>Elm is not released on Hackage anymore. You should now use <code class="literal">elmPackages.elm</code>
+which contains the latest Elm platform.</p></li><li class="listitem"><p>The CUPS printing service has been updated to version
+  <code class="literal">2.0.2</code>.  Furthermore its systemd service has been
+  renamed to <code class="literal">cups.service</code>.</p><p>Local printers are no longer shared or advertised by
+  default. This behavior can be changed by enabling
+  <code class="option">services.printing.defaultShared</code> or
+  <code class="option">services.printing.browsing</code> respectively.</p></li><li class="listitem"><p>
+    The VirtualBox host and guest options have been named more
+    consistently. They can now found in
+    <code class="option">virtualisation.virtualbox.host.*</code> instead of
+    <code class="option">services.virtualboxHost.*</code> and
+    <code class="option">virtualisation.virtualbox.guest.*</code> instead of
+    <code class="option">services.virtualboxGuest.*</code>.
+  </p><p>
+    Also, there now is support for the <code class="literal">vboxsf</code> file
+    system using the <code class="option">fileSystems</code> configuration
+    attribute. An example of how this can be used in a configuration:
+
+</p><pre class="programlisting">
+fileSystems."/shiny" = {
+  device = "myshinysharedfolder";
+  fsType = "vboxsf";
+};
+</pre><p>
+
+  </p></li><li class="listitem"><p>
+    "<code class="literal">nix-env -qa</code>" no longer discovers
+    Haskell packages by name. The only packages visible in the global
+    scope are <code class="literal">ghc</code>, <code class="literal">cabal-install</code>,
+    and <code class="literal">stack</code>, but all other packages are hidden. The
+    reason for this inconvenience is the sheer size of the Haskell
+    package set. Name-based lookups are expensive, and most
+    <code class="literal">nix-env -qa</code> operations would become much slower
+    if we'd add the entire Hackage database into the top level attribute
+    set. Instead, the list of Haskell packages can be displayed by
+    running:
+  </p><pre class="programlisting">
+nix-env -f "&lt;nixpkgs&gt;" -qaP -A haskellPackages
+</pre><p>
+    Executable programs written in Haskell can be installed with:
+  </p><pre class="programlisting">
+nix-env -f "&lt;nixpkgs&gt;" -iA haskellPackages.pandoc
+</pre><p>
+    Installing Haskell <span class="emphasis"><em>libraries</em></span> this way, however, is no
+    longer supported. See the next item for more details.
+  </p></li><li class="listitem"><p>
+    Previous versions of NixOS came with a feature called
+    <code class="literal">ghc-wrapper</code>, a small script that allowed GHC to
+    transparently pick up on libraries installed in the user's profile. This
+    feature has been deprecated; <code class="literal">ghc-wrapper</code> was removed
+    from the distribution. The proper way to register Haskell libraries with
+    the compiler now is the <code class="literal">haskellPackages.ghcWithPackages</code>
+    function. The <a class="link" href="release-notes-http://nixos.org/nixpkgs/manual/#users-guide-to-the-haskell-infrastructure" target="_top">User's
+    Guide to the Haskell Infrastructure</a> provides more information about
+    this subject.
+  </p></li><li class="listitem"><p>
+    All Haskell builds that have been generated with version 1.x of
+    the <code class="literal">cabal2nix</code> utility are now invalid and need
+    to be re-generated with a current version of
+    <code class="literal">cabal2nix</code> to function. The most recent version
+    of this tool can be installed by running
+    <code class="literal">nix-env -i cabal2nix</code>.
+  </p></li><li class="listitem"><p>
+    The <code class="literal">haskellPackages</code> set in Nixpkgs used to have a
+    function attribute called <code class="literal">extension</code> that users
+    could override in their <code class="literal">~/.nixpkgs/config.nix</code>
+    files to configure additional attributes, etc. That function still
+    exists, but it's now called <code class="literal">overrides</code>.
+  </p></li><li class="listitem"><p>
+    The OpenBLAS library has been updated to version
+    <code class="literal">0.2.14</code>. Support for the
+    <code class="literal">x86_64-darwin</code> platform was added. Dynamic
+    architecture detection was enabled; OpenBLAS now selects
+    microarchitecture-optimized routines at runtime, so optimal
+    performance is achieved without the need to rebuild OpenBLAS
+    locally. OpenBLAS has replaced ATLAS in most packages which use an
+    optimized BLAS or LAPACK implementation.
+ </p></li><li class="listitem"><p>
+    The <code class="literal">phpfpm</code> is now using the default PHP version
+    (<code class="literal">pkgs.php</code>) instead of PHP 5.4 (<code class="literal">pkgs.php54</code>).
+  </p></li><li class="listitem"><p>
+    The <code class="literal">locate</code> service no longer indexes the Nix store
+    by default, preventing packages with potentially numerous versions from
+    cluttering the output. Indexing the store can be activated by setting
+    <code class="option">services.locate.includeStore = true</code>.
+  </p></li><li class="listitem"><p>
+    The Nix expression search path (<code class="envar">NIX_PATH</code>) no longer
+    contains <code class="filename">/etc/nixos/nixpkgs</code> by default. You
+    can override <code class="envar">NIX_PATH</code> by setting
+    <code class="option">nix.nixPath</code>.
+  </p></li><li class="listitem"><p>
+    Python 2.6 has been marked as broken (as it no longer receives
+    security updates from upstream).
+  </p></li><li class="listitem"><p>
+    Any use of module arguments such as <code class="varname">pkgs</code> to access
+    library functions, or to define <code class="literal">imports</code> attributes
+    will now lead to an infinite loop at the time of the evaluation.
+  </p><p>
+    In case of an infinite loop, use the <span class="command"><strong>--show-trace</strong></span>
+    command line argument and read the line just above the error message.
+
+</p><pre class="screen">
+$ nixos-rebuild build --show-trace
+…
+while evaluating the module argument `pkgs' in "/etc/nixos/my-module.nix":
+infinite recursion encountered
+</pre><p>
+  </p><p>
+    Any use of <code class="literal">pkgs.lib</code>, should be replaced by
+    <code class="varname">lib</code>, after adding it as argument of the module.  The
+    following module
+
+</p><pre class="programlisting">
+{ config, pkgs, ... }:
+
+with pkgs.lib;
+
+{
+  options = {
+    foo = mkOption { … };
+  };
+  config = mkIf config.foo { … };
+}
+</pre><p>
+
+   should be modified to look like:
+
+</p><pre class="programlisting">
+{ config, pkgs, lib, ... }:
+
+with lib;
+
+{
+  options = {
+    foo = mkOption { <em class="replaceable"><code>option declaration</code></em> };
+  };
+  config = mkIf config.foo { <em class="replaceable"><code>option definition</code></em> };
+}
+</pre><p>
+  </p><p>
+    When <code class="varname">pkgs</code> is used to download other projects to
+    import their modules, and only in such cases, it should be replaced by
+    <code class="literal">(import &lt;nixpkgs&gt; {})</code>.  The following module
+
+</p><pre class="programlisting">
+{ config, pkgs, ... }:
+
+let
+  myProject = pkgs.fetchurl {
+    src = <em class="replaceable"><code>url</code></em>;
+    sha256 = <em class="replaceable"><code>hash</code></em>;
+  };
+in
+
+{
+  imports = [ "${myProject}/module.nix" ];
+}
+</pre><p>
+
+    should be modified to look like:
+
+</p><pre class="programlisting">
+{ config, pkgs, ... }:
+
+let
+  myProject = (import &lt;nixpkgs&gt; {}).fetchurl {
+    src = <em class="replaceable"><code>url</code></em>;
+    sha256 = <em class="replaceable"><code>hash</code></em>;
+  };
+in
+
+{
+  imports = [ "${myProject}/module.nix" ];
+}
+</pre><p>
+  </p></li></ul></div><p>
+</p><p>Other notable improvements:
+
+</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The nixos and nixpkgs channels were unified,
+    so one <span class="emphasis"><em>can</em></span> use <code class="literal">nix-env -iA nixos.bash</code>
+    instead of <code class="literal">nix-env -iA nixos.pkgs.bash</code>.
+    See <a class="link" href="release-notes-https://github.com/NixOS/nixpkgs/commit/2cd7c1f198" target="_top">the commit</a> for details.
+  </p></li><li class="listitem"><p>
+      Users running an SSH server who worry about the quality of their
+      <code class="literal">/etc/ssh/moduli</code> file with respect to the
+      <a class="link" href="release-notes-https://stribika.github.io/2015/01/04/secure-secure-shell.html" target="_top">vulnerabilities
+      discovered in the Diffie-Hellman key exchange</a> can now
+      replace OpenSSH's default version with one they generated
+      themselves using the new
+      <code class="option">services.openssh.moduliFile</code> option.
+      </p></li><li class="listitem"><p>
+    A newly packaged TeX Live 2015 is provided in <code class="literal">pkgs.texlive</code>,
+    split into 6500 nix packages. For basic user documentation see
+    <a class="link" href="release-notes-https://github.com/NixOS/nixpkgs/blob/release-15.09/pkgs/tools/typesetting/tex/texlive/default.nix#L1" target="_top">the source</a>.
+    Beware of <a class="link" href="release-notes-https://github.com/NixOS/nixpkgs/issues/9757" target="_top">an issue</a> when installing a too large package set.
+
+    The plan is to deprecate and maybe delete the original TeX packages
+    until the next release.
+  </p></li><li class="listitem"><p>
+    <code class="option">buildEnv.env</code> on all Python interpreters
+    is now available for nix-shell interoperability.
+  </p></li></ul></div><p>
+
+</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-release-16.03.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-release-notes.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-release-14.12.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Release 16.03 (“Emu”, 2016/03/31) </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Release 14.12 (“Caterpillar”, 2014/12/30)</td></tr></table></div></body></html>

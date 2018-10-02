@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Chapter 10. Xfce Desktop Environment</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-configuration.html" title="Part II. Configuration" /><link rel="prev" href="sec-x11.html" title="Chapter 9. X Window System" /><link rel="next" href="sec-networking.html" title="Chapter 11. Networking" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 10. Xfce Desktop Environment</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-x11.html">Prev</a> </td><th width="60%" align="center">Part II. Configuration</th><td width="20%" align="right"> <a accesskey="n" href="sec-networking.html">Next</a></td></tr></table><hr /></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a id="sec-xfce"></a>Chapter 10. Xfce Desktop Environment</h2></div></div></div><p>
+        To enable the Xfce Desktop Environment, set
+        </p><pre class="programlisting">
+services.xserver.desktopManager = {
+    xfce.enable = true;
+    default = "xfce";
+};
+        </pre><p>
+    </p><p>
+        Optionally, <span class="emphasis"><em>compton</em></span>
+        can be enabled for nice graphical effects, some example settings:
+        </p><pre class="programlisting">
+services.compton = {
+  enable          = true;
+  fade            = true;
+  inactiveOpacity = "0.9";
+  shadow          = true;
+  fadeDelta       = 4;
+};
+        </pre><p>
+    </p><p>
+        Some Xfce programs are not installed automatically.
+        To install them manually (system wide), put them into your
+        <code class="literal">environment.systemPackages</code>.
+    </p><p>
+        NixOS’s default <span class="emphasis"><em>display manager</em></span> is SLiM.
+        (DM is the program that provides a graphical login prompt
+         and manages the X server.)
+        You can, for example, select KDE’s
+        <span class="command"><strong>sddm</strong></span> instead:
+        </p><pre class="programlisting">
+services.xserver.displayManager.sddm.enable = true;
+        </pre><p>
+    </p><div class="simplesect"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idm140404928633568"></a>Thunar Volume Support</h2></div></div></div><p>
+            To enable
+            <span class="emphasis"><em>Thunar</em></span>
+            volume support, put
+            </p><pre class="programlisting">
+services.xserver.desktopManager.xfce.enable = true;
+            </pre><p>
+            into your <span class="emphasis"><em>configuration.nix</em></span>.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idm140404928636656"></a>Polkit Authentication Agent</h2></div></div></div><p>
+            There is no authentication agent automatically installed alongside
+            Xfce. To allow mounting of local (non-removable) filesystems, you
+            will need to install one.
+
+            Installing <span class="emphasis"><em>polkit_gnome</em></span>, a rebuild, logout and
+            login did the trick.
+        </p></div><div class="simplesect"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idm140404928639648"></a>Troubleshooting</h2></div></div></div><p>
+            Even after enabling udisks2, volume management might not work.
+            Thunar and/or the desktop takes time to show up.
+
+            Thunar will spit out this kind of message on start
+            (look at <span class="command"><strong>journalctl --user -b</strong></span>).
+
+            </p><pre class="programlisting">
+Thunar:2410): GVFS-RemoteVolumeMonitor-WARNING **: remote volume monitor with dbus name org.gtk.Private.UDisks2VolumeMonitor is not supported
+            </pre><p>
+
+            This is caused by some needed GNOME services not running.
+            This is all fixed by enabling "Launch GNOME services on startup" in
+            the Advanced tab of the Session and Startup settings panel.
+            Alternatively, you can run this command to do the same thing.
+            </p><pre class="programlisting">
+$ xfconf-query -c xfce4-session -p /compat/LaunchGNOME -s true
+            </pre><p>
+            A log-out and re-log will be needed for this to take effect.
+        </p></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-x11.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-configuration.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-networking.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 9. X Window System </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 11. Networking</td></tr></table></div></body></html>

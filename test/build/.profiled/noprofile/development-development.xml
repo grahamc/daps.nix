@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<part xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xml:base="development-development.xml" version="5.0" xml:id="ch-development">
+
+<title>Development</title>
+
+<partintro>
+<para>This chapter describes how you can modify and extend
+NixOS.</para>
+</partintro>
+
+<xi:include href="development-sources.xml"/>
+<xi:include href="development-writing-modules.xml"/>
+<xi:include href="development-building-parts.xml"/>
+<xi:include href="development-writing-documentation.xml"/>
+<xi:include href="development-building-nixos.xml"/>
+<xi:include href="development-nixos-tests.xml"/>
+<xi:include href="development-testing-installer.xml"/>
+<xi:include href="development-releases.xml"/>
+
+</part>

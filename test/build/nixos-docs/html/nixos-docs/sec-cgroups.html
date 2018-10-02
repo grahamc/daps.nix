@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Chapter 16. Control Groups</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-running.html" title="Part III. Administration" /><link rel="prev" href="sec-user-sessions.html" title="Chapter 15. User Sessions" /><link rel="next" href="sec-logging.html" title="Chapter 17. Logging" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 16. Control Groups</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-user-sessions.html">Prev</a> </td><th width="60%" align="center">Part III. Administration</th><td width="20%" align="right"> <a accesskey="n" href="sec-logging.html">Next</a></td></tr></table><hr /></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a id="sec-cgroups"></a>Chapter 16. Control Groups</h2></div></div></div><p>To keep track of the processes in a running system, systemd uses
+<span class="emphasis"><em>control groups</em></span> (cgroups).  A control group is a
+set of processes used to allocate resources such as CPU, memory or I/O
+bandwidth.  There can be multiple control group hierarchies, allowing
+each kind of resource to be managed independently.</p><p>The command <span class="command"><strong>systemd-cgls</strong></span> lists all control
+groups in the <code class="literal">systemd</code> hierarchy, which is what
+systemd uses to keep track of the processes belonging to each service
+or user session:
+
+</p><pre class="screen">
+$ systemd-cgls
+├─user
+│ └─eelco
+│   └─c1
+│     ├─ 2567 -:0
+│     ├─ 2682 kdeinit4: kdeinit4 Running...
+│     ├─ <em class="replaceable"><code>...</code></em>
+│     └─10851 sh -c less -R
+└─system
+  ├─httpd.service
+  │ ├─2444 httpd -f /nix/store/3pyacby5cpr55a03qwbnndizpciwq161-httpd.conf -DNO_DETACH
+  │ └─<em class="replaceable"><code>...</code></em>
+  ├─dhcpcd.service
+  │ └─2376 dhcpcd --config /nix/store/f8dif8dsi2yaa70n03xir8r653776ka6-dhcpcd.conf
+  └─ <em class="replaceable"><code>...</code></em>
+</pre><p>
+
+Similarly, <span class="command"><strong>systemd-cgls cpu</strong></span> shows the cgroups in
+the CPU hierarchy, which allows per-cgroup CPU scheduling priorities.
+By default, every systemd service gets its own CPU cgroup, while all
+user sessions are in the top-level CPU cgroup.  This ensures, for
+instance, that a thousand run-away processes in the
+<code class="literal">httpd.service</code> cgroup cannot starve the CPU for one
+process in the <code class="literal">postgresql.service</code> cgroup.  (By
+contrast, it they were in the same cgroup, then the PostgreSQL process
+would get 1/1001 of the cgroup’s CPU time.)  You can limit a service’s
+CPU share in <code class="filename">configuration.nix</code>:
+
+</p><pre class="programlisting">
+systemd.services.httpd.serviceConfig.CPUShares = 512;
+</pre><p>
+
+By default, every cgroup has 1024 CPU shares, so this will halve the
+CPU allocation of the <code class="literal">httpd.service</code> cgroup.</p><p>There also is a <code class="literal">memory</code> hierarchy that
+controls memory allocation limits; by default, all processes are in
+the top-level cgroup, so any service or session can exhaust all
+available memory.  Per-cgroup memory limits can be specified in
+<code class="filename">configuration.nix</code>; for instance, to limit
+<code class="literal">httpd.service</code> to 512 MiB of RAM (excluding swap):
+
+</p><pre class="programlisting">
+systemd.services.httpd.serviceConfig.MemoryLimit = "512M";
+</pre><p>
+
+</p><p>The command <span class="command"><strong>systemd-cgtop</strong></span> shows a
+continuously updated list of all cgroups with their CPU and memory
+usage.</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-user-sessions.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-running.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-logging.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 15. User Sessions </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 17. Logging</td></tr></table></div></body></html>

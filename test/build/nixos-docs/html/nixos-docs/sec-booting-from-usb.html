@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Booting from a USB Drive</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="sec-installation.html" title="Chapter 2. Installing NixOS" /><link rel="prev" href="sec-installation.html" title="Chapter 2. Installing NixOS" /><link rel="next" href="sec-booting-from-pxe.html" title="Booting from the “netboot” media (PXE)" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Booting from a USB Drive</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-installation.html">Prev</a> </td><th width="60%" align="center">Chapter 2. Installing NixOS</th><td width="20%" align="right"> <a accesskey="n" href="sec-booting-from-pxe.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-booting-from-usb"></a>Booting from a USB Drive</h2></div></div></div><p>For systems without CD drive, the NixOS live CD can be booted from
+a USB stick. You can use the <span class="command"><strong>dd</strong></span> utility to write the image:
+<span class="command"><strong>dd if=<em class="replaceable"><code>path-to-image</code></em>
+of=<em class="replaceable"><code>/dev/sdb</code></em></strong></span>. Be careful about specifying the
+correct drive; you can use the <span class="command"><strong>lsblk</strong></span> command to get a list of
+block devices. If you're on macOS you can run <span class="command"><strong>diskutil list</strong></span>
+to see the list of devices; the device you'll use for the USB must be ejected
+before writing the image.</p><p>The <span class="command"><strong>dd</strong></span> utility will write the image verbatim to the drive,
+making it the recommended option for both UEFI and non-UEFI installations. For
+non-UEFI installations, you can alternatively use
+<a class="link" href="installation-http://unetbootin.sourceforge.net/" target="_top">unetbootin</a>. If you
+cannot use <span class="command"><strong>dd</strong></span> for a UEFI installation, you can also mount the
+ISO, copy its contents verbatim to your drive, then either:
+
+</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Change the label of the disk partition to the label of the ISO
+    (visible with the blkid command), or</p></li><li class="listitem"><p>Edit <code class="filename">loader/entries/nixos-livecd.conf</code> on the drive
+    and change the <code class="literal">root=</code> field in the <code class="literal">options</code>
+    line to point to your drive (see the documentation on <code class="literal">root=</code>
+    in <a class="link" href="installation-https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt" target="_top">
+    the kernel documentation</a> for more details).</p></li><li class="listitem"><p>If you want to load the contents of the ISO to ram after bootin
+    (So you can remove the stick after bootup) you can append the parameter
+    <code class="literal">copytoram</code>to the <code class="literal">options</code> field.</p></li></ul></div><p>
+</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-installation.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sec-installation.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-booting-from-pxe.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 2. Installing NixOS </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Booting from the <span class="quote">“<span class="quote">netboot</span>”</span> media (PXE)</td></tr></table></div></body></html>

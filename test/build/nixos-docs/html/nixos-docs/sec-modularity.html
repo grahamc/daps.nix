@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Modularity</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="sec-configuration-syntax.html" title="Chapter 5. Configuration Syntax" /><link rel="prev" href="sec-module-abstractions.html" title="Abstractions" /><link rel="next" href="sec-nix-syntax-summary.html" title="Syntax Summary" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Modularity</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-module-abstractions.html">Prev</a> </td><th width="60%" align="center">Chapter 5. Configuration Syntax</th><td width="20%" align="right"> <a accesskey="n" href="sec-nix-syntax-summary.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-modularity"></a>Modularity</h2></div></div></div><p>The NixOS configuration mechanism is modular.  If your
+<code class="filename">configuration.nix</code> becomes too big, you can split
+it into multiple files.  Likewise, if you have multiple NixOS
+configurations (e.g. for different computers) with some commonality,
+you can move the common configuration into a shared file.</p><p>Modules have exactly the same syntax as
+<code class="filename">configuration.nix</code>.  In fact,
+<code class="filename">configuration.nix</code> is itself a module.  You can
+use other modules by including them from
+<code class="filename">configuration.nix</code>, e.g.:
+
+</p><pre class="programlisting">
+{ config, pkgs, ... }:
+
+{ imports = [ ./vpn.nix ./kde.nix ];
+  services.httpd.enable = true;
+  environment.systemPackages = [ pkgs.emacs ];
+  <em class="replaceable"><code>...</code></em>
+}
+</pre><p>
+
+Here, we include two modules from the same directory,
+<code class="filename">vpn.nix</code> and <code class="filename">kde.nix</code>.  The
+latter might look like this:
+
+</p><pre class="programlisting">
+{ config, pkgs, ... }:
+
+{ services.xserver.enable = true;
+  services.xserver.displayManager.sddm.enable = true;
+  services.xserver.desktopManager.plasma5.enable = true;
+}
+</pre><p>
+
+Note that both <code class="filename">configuration.nix</code> and
+<code class="filename">kde.nix</code> define the option
+<code class="option">environment.systemPackages</code>.  When multiple modules
+define an option, NixOS will try to <span class="emphasis"><em>merge</em></span> the
+definitions.  In the case of
+<code class="option">environment.systemPackages</code>, that’s easy: the lists of
+packages can simply be concatenated.  The value in
+<code class="filename">configuration.nix</code> is merged last, so for
+list-type options, it will appear at the end of the merged list. If
+you want it to appear first, you can use <code class="varname">mkBefore</code>:
+
+</p><pre class="programlisting">
+boot.kernelModules = mkBefore [ "kvm-intel" ];
+</pre><p>
+
+This causes the <code class="literal">kvm-intel</code> kernel module to be
+loaded before any other kernel modules.</p><p>For other types of options, a merge may not be possible. For
+instance, if two modules define
+<code class="option">services.httpd.adminAddr</code>,
+<span class="command"><strong>nixos-rebuild</strong></span> will give an error:
+
+</p><pre class="screen">
+The unique option `services.httpd.adminAddr' is defined multiple times, in `/etc/nixos/httpd.nix' and `/etc/nixos/configuration.nix'.
+</pre><p>
+
+When that happens, it’s possible to force one definition take
+precedence over the others:
+
+</p><pre class="programlisting">
+services.httpd.adminAddr = pkgs.lib.mkForce "bob@example.org";
+</pre><p>
+
+</p><p>When using multiple modules, you may need to access
+configuration values defined in other modules.  This is what the
+<code class="varname">config</code> function argument is for: it contains the
+complete, merged system configuration.  That is,
+<code class="varname">config</code> is the result of combining the
+configurations returned by every module<a href="#ftn.idm140404928170192" class="footnote" id="idm140404928170192"><sup class="footnote">[1]</sup></a>.  For example, here is a module that adds
+some packages to <code class="option">environment.systemPackages</code> only if
+<code class="option">services.xserver.enable</code> is set to
+<code class="literal">true</code> somewhere else:
+
+</p><pre class="programlisting">
+{ config, pkgs, ... }:
+
+{ environment.systemPackages =
+    if config.services.xserver.enable then
+      [ pkgs.firefox
+        pkgs.thunderbird
+      ]
+    else
+      [ ];
+}
+</pre><p>
+
+</p><p>With multiple modules, it may not be obvious what the final
+value of a configuration option is.  The command
+<code class="option">nixos-option</code> allows you to find out:
+
+</p><pre class="screen">
+$ nixos-option services.xserver.enable
+true
+
+$ nixos-option boot.kernelModules
+[ "tun" "ipv6" "loop" <em class="replaceable"><code>...</code></em> ]
+</pre><p>
+
+Interactive exploration of the configuration is possible using
+<span class="command"><strong><a class="command" href="configuration-https://github.com/edolstra/nix-repl" target="_top">nix-repl</a></strong></span>,
+a read-eval-print loop for Nix expressions.  It’s not installed by
+default; run <code class="literal">nix-env -i nix-repl</code> to get it.  A
+typical use:
+
+</p><pre class="screen">
+$ nix-repl '&lt;nixpkgs/nixos&gt;'
+
+nix-repl&gt; config.networking.hostName
+"mandark"
+
+nix-repl&gt; map (x: x.hostName) config.services.httpd.virtualHosts
+[ "example.org" "example.gov" ]
+</pre><p>
+
+</p><div class="footnotes"><br /><hr style="width:100; text-align:left;margin-left: 0" /><div id="ftn.idm140404928170192" class="footnote"><p><a href="#idm140404928170192" class="para"><sup class="para">[1] </sup></a>If you’re
+wondering how it’s possible that the (indirect)
+<span class="emphasis"><em>result</em></span> of a function is passed as an
+<span class="emphasis"><em>input</em></span> to that same function: that’s because Nix
+is a “lazy” language — it only computes values when they are needed.
+This works as long as no individual configuration value depends on
+itself.</p></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-module-abstractions.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sec-configuration-syntax.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-nix-syntax-summary.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Abstractions </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Syntax Summary</td></tr></table></div></body></html>

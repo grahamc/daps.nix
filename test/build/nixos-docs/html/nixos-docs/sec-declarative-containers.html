@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Declarative Container Specification</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-containers.html" title="Chapter 19. Container Management" /><link rel="prev" href="ch-containers.html" title="Chapter 19. Container Management" /><link rel="next" href="sec-container-networking.html" title="Container Networking" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Declarative Container Specification</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch-containers.html">Prev</a> </td><th width="60%" align="center">Chapter 19. Container Management</th><td width="20%" align="right"> <a accesskey="n" href="sec-container-networking.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-declarative-containers"></a>Declarative Container Specification</h2></div></div></div><p>You can also specify containers and their configuration in the
+host’s <code class="filename">configuration.nix</code>.  For example, the
+following specifies that there shall be a container named
+<code class="literal">database</code> running PostgreSQL:
+
+</p><pre class="programlisting">
+containers.database =
+  { config =
+      { config, pkgs, ... }:
+      { services.postgresql.enable = true;
+        services.postgresql.package = pkgs.postgresql96;
+      };
+  };
+</pre><p>
+
+If you run <code class="literal">nixos-rebuild switch</code>, the container will
+be built. If the container was already running, it will be
+updated in place, without rebooting. The container can be configured to
+start automatically by setting <code class="literal">containers.database.autoStart = true</code>
+in its configuration.</p><p>By default, declarative containers share the network namespace
+of the host, meaning that they can listen on (privileged)
+ports. However, they cannot change the network configuration. You can
+give a container its own network as follows:
+
+</p><pre class="programlisting">
+containers.database =
+  { privateNetwork = true;
+    hostAddress = "192.168.100.10";
+    localAddress = "192.168.100.11";
+  };
+</pre><p>
+
+This gives the container a private virtual Ethernet interface with IP
+address <code class="literal">192.168.100.11</code>, which is hooked up to a
+virtual Ethernet interface on the host with IP address
+<code class="literal">192.168.100.10</code>. (See the next section for details
+on container networking.)</p><p>To disable the container, just remove it from
+<code class="filename">configuration.nix</code> and run <code class="literal">nixos-rebuild
+switch</code>. Note that this will not delete the root directory of
+the container in <code class="literal">/var/lib/containers</code>. Containers can be
+destroyed using the imperative method: <code class="literal">nixos-container destroy
+ foo</code>.</p><p>Declarative containers can be started and stopped using the
+corresponding systemd service, e.g. <code class="literal">systemctl start
+container@database</code>.</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch-containers.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-containers.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-container-networking.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 19. Container Management </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Container Networking</td></tr></table></div></body></html>

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Release 17.03 (“Gorilla”, 2017/03/31)</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-release-notes.html" title="Appendix B. Release Notes" /><link rel="prev" href="ch-release-notes.html" title="Appendix B. Release Notes" /><link rel="next" href="sec-release-16.09.html" title="Release 16.09 (“Flounder”, 2016/09/30)" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Release 17.03 (“Gorilla”, 2017/03/31)</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch-release-notes.html">Prev</a> </td><th width="60%" align="center">Appendix B. Release Notes</th><td width="20%" align="right"> <a accesskey="n" href="sec-release-16.09.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-release-17.03"></a>Release 17.03 (“Gorilla”, 2017/03/31)</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="sec-release-17.03-highlights"></a>Highlights</h3></div></div></div><p>In addition to numerous new and upgraded packages, this release
+has the following highlights: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Nixpkgs is now extensible through overlays. See the <a class="link" href="release-notes-https://nixos.org/nixpkgs/manual/#sec-overlays-install" target="_top">Nixpkgs
+    manual</a> for more information.</p></li><li class="listitem"><p>This release is based on Glibc 2.25, GCC 5.4.0 and systemd
+    232. The default Linux kernel is 4.9 and Nix is at 1.11.8.</p></li><li class="listitem"><p>The default desktop environment now is KDE's Plasma 5. KDE 4 has been removed</p></li><li class="listitem"><p>The setuid wrapper functionality now supports setting
+    capabilities.</p></li><li class="listitem"><p>X.org server uses branch 1.19. Due to ABI incompatibilities,
+      <code class="literal">ati_unfree</code> keeps forcing 1.17
+      and <code class="literal">amdgpu-pro</code> starts forcing 1.18.</p></li><li class="listitem"><p>
+      Cross compilation has been rewritten. See the nixpkgs manual for
+      details. The most obvious breaking change is that in derivations there is no
+      <code class="literal">.nativeDrv</code> nor <code class="literal">.crossDrv</code> are now
+      cross by default, not native.
+    </p></li><li class="listitem"><p>The <code class="literal">overridePackages</code> function has been rewritten
+    to be replaced by <a class="link" href="release-notes-https://nixos.org/nixpkgs/manual/#sec-overlays-install" target="_top">
+    overlays</a></p></li><li class="listitem"><p>Packages in nixpkgs can be marked as insecure through listed
+    vulnerabilities. See the <a class="link" href="release-notes-https://nixos.org/nixpkgs/manual/#sec-allow-insecure" target="_top">Nixpkgs
+    manual</a> for more information.</p></li><li class="listitem"><p>PHP now defaults to PHP 7.1</p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="sec-release-17.03-new-services"></a>New Services</h3></div></div></div><p>The following new services were added since the last release:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">hardware/ckb.nix</code></p></li><li class="listitem"><p><code class="literal">hardware/mcelog.nix</code></p></li><li class="listitem"><p><code class="literal">hardware/usb-wwan.nix</code></p></li><li class="listitem"><p><code class="literal">hardware/video/capture/mwprocapture.nix</code></p></li><li class="listitem"><p><code class="literal">programs/adb.nix</code></p></li><li class="listitem"><p><code class="literal">programs/chromium.nix</code></p></li><li class="listitem"><p><code class="literal">programs/gphoto2.nix</code></p></li><li class="listitem"><p><code class="literal">programs/java.nix</code></p></li><li class="listitem"><p><code class="literal">programs/mtr.nix</code></p></li><li class="listitem"><p><code class="literal">programs/oblogout.nix</code></p></li><li class="listitem"><p><code class="literal">programs/vim.nix</code></p></li><li class="listitem"><p><code class="literal">programs/wireshark.nix</code></p></li><li class="listitem"><p><code class="literal">security/dhparams.nix</code></p></li><li class="listitem"><p><code class="literal">services/audio/ympd.nix</code></p></li><li class="listitem"><p><code class="literal">services/computing/boinc/client.nix</code></p></li><li class="listitem"><p><code class="literal">services/continuous-integration/buildbot/master.nix</code></p></li><li class="listitem"><p><code class="literal">services/continuous-integration/buildbot/worker.nix</code></p></li><li class="listitem"><p><code class="literal">services/continuous-integration/gitlab-runner.nix</code></p></li><li class="listitem"><p><code class="literal">services/databases/riak-cs.nix</code></p></li><li class="listitem"><p><code class="literal">services/databases/stanchion.nix</code></p></li><li class="listitem"><p><code class="literal">services/desktops/gnome3/gnome-terminal-server.nix</code></p></li><li class="listitem"><p><code class="literal">services/editors/infinoted.nix</code></p></li><li class="listitem"><p><code class="literal">services/hardware/illum.nix</code></p></li><li class="listitem"><p><code class="literal">services/hardware/trezord.nix</code></p></li><li class="listitem"><p><code class="literal">services/logging/journalbeat.nix</code></p></li><li class="listitem"><p><code class="literal">services/mail/offlineimap.nix</code></p></li><li class="listitem"><p><code class="literal">services/mail/postgrey.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/couchpotato.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/docker-registry.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/errbot.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/geoip-updater.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/gogs.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/leaps.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/nix-optimise.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/ssm-agent.nix</code></p></li><li class="listitem"><p><code class="literal">services/misc/sssd.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/arbtt.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/netdata.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/prometheus/default.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/prometheus/alertmanager.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/prometheus/blackbox-exporter.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/prometheus/json-exporter.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/prometheus/nginx-exporter.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/prometheus/node-exporter.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/prometheus/snmp-exporter.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/prometheus/unifi-exporter.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/prometheus/varnish-exporter.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/sysstat.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/telegraf.nix</code></p></li><li class="listitem"><p><code class="literal">services/monitoring/vnstat.nix</code></p></li><li class="listitem"><p><code class="literal">services/network-filesystems/cachefilesd.nix</code></p></li><li class="listitem"><p><code class="literal">services/network-filesystems/glusterfs.nix</code></p></li><li class="listitem"><p><code class="literal">services/network-filesystems/ipfs.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/dante.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/dnscrypt-wrapper.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/fakeroute.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/flannel.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/htpdate.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/miredo.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/nftables.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/powerdns.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/pdns-recursor.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/quagga.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/redsocks.nix</code></p></li><li class="listitem"><p><code class="literal">services/networking/wireguard.nix</code></p></li><li class="listitem"><p><code class="literal">services/system/cgmanager.nix</code></p></li><li class="listitem"><p><code class="literal">services/torrent/opentracker.nix</code></p></li><li class="listitem"><p><code class="literal">services/web-apps/atlassian/confluence.nix</code></p></li><li class="listitem"><p><code class="literal">services/web-apps/atlassian/crowd.nix</code></p></li><li class="listitem"><p><code class="literal">services/web-apps/atlassian/jira.nix</code></p></li><li class="listitem"><p><code class="literal">services/web-apps/frab.nix</code></p></li><li class="listitem"><p><code class="literal">services/web-apps/nixbot.nix</code></p></li><li class="listitem"><p><code class="literal">services/web-apps/selfoss.nix</code></p></li><li class="listitem"><p><code class="literal">services/web-apps/quassel-webserver.nix</code></p></li><li class="listitem"><p><code class="literal">services/x11/unclutter-xfixes.nix</code></p></li><li class="listitem"><p><code class="literal">services/x11/urxvtd.nix</code></p></li><li class="listitem"><p><code class="literal">system/boot/systemd-nspawn.nix</code></p></li><li class="listitem"><p><code class="literal">virtualisation/ecs-agent.nix</code></p></li><li class="listitem"><p><code class="literal">virtualisation/lxcfs.nix</code></p></li><li class="listitem"><p><code class="literal">virtualisation/openstack/keystone.nix</code></p></li><li class="listitem"><p><code class="literal">virtualisation/openstack/glance.nix</code></p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="sec-release-17.03-incompatibilities"></a>Backward Incompatibilities</h3></div></div></div><p>When upgrading from a previous release, please be aware of the
+following incompatible changes:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+      Derivations have no <code class="literal">.nativeDrv</code> nor <code class="literal">.crossDrv</code> 
+      and are now cross by default, not native.
+    </p></li><li class="listitem"><p>
+      <code class="literal">stdenv.overrides</code> is now expected to take <code class="literal">self</code>
+      and <code class="literal">super</code> arguments. See <code class="literal">lib.trivial.extends</code>
+      for what those parameters represent.
+    </p></li><li class="listitem"><p>
+      <code class="literal">ansible</code> now defaults to ansible version 2 as version 1
+      has been removed due to a serious <a class="link" href="release-notes-https://www.computest.nl/advisories/CT-2017-0109_Ansible.txt" target="_top">
+      vulnerability</a> unpatched by upstream.
+    </p></li><li class="listitem"><p>
+      <code class="literal">gnome</code> alias has been removed along with
+      <code class="literal">gtk</code>, <code class="literal">gtkmm</code> and several others.
+      Now you need to use versioned attributes, like <code class="literal">gnome3</code>.
+    </p></li><li class="listitem"><p>
+      The attribute name of the Radicale daemon has been changed from
+      <code class="literal">pythonPackages.radicale</code> to
+      <code class="literal">radicale</code>.
+    </p></li><li class="listitem"><p>
+      The <code class="literal">stripHash</code> bash function in <code class="literal">stdenv</code>
+      changed according to its documentation; it now outputs the stripped name to
+      <code class="literal">stdout</code> instead of putting it in the variable
+      <code class="literal">strippedName</code>.
+    </p></li><li class="listitem"><p>PHP now scans for extra configuration .ini files in /etc/php.d
+    instead of /etc. This prevents accidentally loading non-PHP .ini files
+    that may be in /etc.
+    </p></li><li class="listitem"><p>
+      Two lone top-level dict dbs moved into <code class="literal">dictdDBs</code>. This
+      affects: <code class="literal">dictdWordnet</code> which is now at
+      <code class="literal">dictdDBs.wordnet</code> and <code class="literal">dictdWiktionary</code>
+      which is now at <code class="literal">dictdDBs.wiktionary</code>
+    </p></li><li class="listitem"><p>
+      Parsoid service now uses YAML configuration format.
+     <code class="literal">service.parsoid.interwikis</code> is now called
+     <code class="literal">service.parsoid.wikis</code> and is a list of either API URLs
+     or attribute sets as specified in parsoid's documentation.
+    </p></li><li class="listitem"><p>
+     <code class="literal">Ntpd</code> was replaced by
+     <code class="literal">systemd-timesyncd</code> as the default service to synchronize
+     system time with a remote NTP server. The old behavior can be restored by
+     setting <code class="literal">services.ntp.enable</code> to <code class="literal">true</code>.
+     Upstream time servers for all NTP implementations are now configured using
+     <code class="literal">networking.timeServers</code>.
+   </p></li><li class="listitem"><p>
+      <code class="literal">service.nylon</code> is now declared using named instances.
+      As an example:
+
+</p><pre class="programlisting">
+  services.nylon = {
+    enable = true;
+    acceptInterface = "br0";
+    bindInterface = "tun1";
+    port = 5912;
+  };
+</pre><p>
+
+      should be replaced with:
+
+</p><pre class="programlisting">
+  services.nylon.myvpn = {
+    enable = true;
+    acceptInterface = "br0";
+    bindInterface = "tun1";
+    port = 5912;
+  };
+</pre><p>
+
+      this enables you to declare a SOCKS proxy for each uplink.
+
+    </p></li><li class="listitem"><p><code class="literal">overridePackages</code> function no longer exists.
+    It is replaced by <a class="link" href="release-notes-https://nixos.org/nixpkgs/manual/#sec-overlays-install" target="_top">
+    overlays</a>. For example, the following code:
+
+</p><pre class="programlisting">
+  let
+    pkgs = import &lt;nixpkgs&gt; {};
+  in
+    pkgs.overridePackages (self: super: ...)
+</pre><p>
+
+    should be replaced by:
+
+</p><pre class="programlisting">
+  let
+    pkgs = import &lt;nixpkgs&gt; {};
+  in
+    import pkgs.path { overlays = [(self: super: ...)]; }
+</pre><p>
+
+    </p></li><li class="listitem"><p>
+      Autoloading connection tracking helpers is now disabled by default.
+      This default was also changed in the Linux kernel and is considered
+      insecure if not configured properly in your firewall. If you need
+      connection tracking helpers (i.e. for active FTP) please enable
+      <code class="literal">networking.firewall.autoLoadConntrackHelpers</code> and
+      tune <code class="literal">networking.firewall.connectionTrackingModules</code>
+      to suit your needs.
+    </p></li><li class="listitem"><p>
+      <code class="literal">local_recipient_maps</code> is not set to empty value by
+      Postfix service. It's an insecure default as stated by Postfix
+      documentation. Those who want to retain this setting need to set it via
+      <code class="literal">services.postfix.extraConfig</code>.
+    </p></li><li class="listitem"><p>
+    Iputils no longer provide ping6 and traceroute6. The functionality of
+    these tools has been integrated into ping and traceroute respectively. To
+    enforce an address family the new flags <code class="literal">-4</code> and
+    <code class="literal">-6</code> have been added. One notable incompatibility is that
+    specifying an interface (for link-local IPv6 for instance) is no longer done
+    with the <code class="literal">-I</code> flag, but by encoding the interface into the
+    address (<code class="literal">ping fe80::1%eth0</code>).
+    </p></li><li class="listitem"><p>
+      The socket handling of the <code class="literal">services.rmilter</code> module
+      has been fixed and refactored. As rmilter doesn't support binding to
+      more than one socket, the options <code class="literal">bindUnixSockets</code>
+      and <code class="literal">bindInetSockets</code> have been replaced by
+      <code class="literal">services.rmilter.bindSocket.*</code>. The default is still
+      a unix socket in <code class="literal">/run/rmilter/rmilter.sock</code>. Refer to
+      the options documentation for more information.
+    </p></li><li class="listitem"><p>
+      The <code class="literal">fetch*</code> functions no longer support md5,
+      please use sha256 instead.
+    </p></li><li class="listitem"><p>
+      The dnscrypt-proxy module interface has been streamlined around the
+      <code class="option">extraArgs</code> option. Where possible, legacy option
+      declarations are mapped to <code class="option">extraArgs</code> but will emit
+      warnings. The <code class="option">resolverList</code> has been outright
+      removed: to use an unlisted resolver, use the
+      <code class="option">customResolver</code> option.
+    </p></li><li class="listitem"><p>
+      torbrowser now stores local state under
+      <code class="filename">~/.local/share/tor-browser</code> by default. Any
+      browser profile data from the old location,
+      <code class="filename">~/.torbrowser4</code>, must be migrated manually.
+    </p></li><li class="listitem"><p>
+      The ihaskell, monetdb, offlineimap and sitecopy services have been removed.
+    </p></li></ul></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="sec-release-17.03-notable-changes"></a>Other Notable Changes</h3></div></div></div><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Module type system have a new extensible option types feature that
+      allow to extend certain types, such as enum, through multiple option
+      declarations of the same option across multiple modules.
+    </p></li><li class="listitem"><p>
+      <code class="literal">jre</code> now defaults to GTK+ UI by default. This
+      improves visual consistency and makes Java follow system font style,
+      improving the situation on HighDPI displays. This has a cost of increased
+      closure size; for server and other headless workloads it's recommended to
+      use <code class="literal">jre_headless</code>.
+    </p></li><li class="listitem"><p>Python 2.6 interpreter and package set have been removed.</p></li><li class="listitem"><p>
+      The Python 2.7 interpreter does not use modules anymore. Instead, all
+      CPython interpreters now include the whole standard library except for `tkinter`,
+      which is available in the Python package set.
+    </p></li><li class="listitem"><p>
+      Python 2.7, 3.5 and 3.6 are now built deterministically and 3.4 mostly.
+      Minor modifications had to be made to the interpreters in order to generate
+      deterministic bytecode. This has security implications and is relevant for
+      those using Python in a <code class="literal">nix-shell</code>. See the Nixpkgs manual
+      for details.
+    </p></li><li class="listitem"><p>
+      The Python package sets now use a fixed-point combinator and the sets are
+      available as attributes of the interpreters.
+    </p></li><li class="listitem"><p>
+      The Python function <code class="literal">buildPythonPackage</code> has been improved and can be
+      used to build from Setuptools source, Flit source, and precompiled Wheels.
+    </p></li><li class="listitem"><p>
+      When adding new or updating current Python libraries, the expressions should be put
+      in separate files in <code class="literal">pkgs/development/python-modules</code> and
+      called from <code class="literal">python-packages.nix</code>.
+    </p></li><li class="listitem"><p>
+      The dnscrypt-proxy service supports synchronizing the list of public
+      resolvers without working DNS resolution. This fixes issues caused by the
+      resolver list becoming outdated. It also improves the viability of
+      DNSCrypt only configurations.
+    </p></li><li class="listitem"><p>
+      Containers using bridged networking no longer lose their connection after
+      changes to the host networking.
+    </p></li><li class="listitem"><p>
+      ZFS supports pool auto scrubbing.
+    </p></li><li class="listitem"><p>
+      The bind DNS utilities (e.g. dig) have been split into their own output and
+      are now also available in <code class="literal">pkgs.dnsutils</code> and it is no longer
+      necessary to pull in all of <code class="literal">bind</code> to use them.
+    </p></li><li class="listitem"><p>
+      Per-user configuration was moved from <code class="filename">~/.nixpkgs</code> to
+      <code class="filename">~/.config/nixpkgs</code>. The former is still valid for
+      <code class="filename">config.nix</code> for backwards compatibility.
+    </p></li></ul></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch-release-notes.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-release-notes.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-release-16.09.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Appendix B. Release Notes </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Release 16.09 (“Flounder”, 2016/09/30)</td></tr></table></div></body></html>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Release 14.04 (“Baboon”, 2014/04/30)</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-release-notes.html" title="Appendix B. Release Notes" /><link rel="prev" href="sec-release-14.12.html" title="Release 14.12 (“Caterpillar”, 2014/12/30)" /><link rel="next" href="sec-release-13.10.html" title="Release 13.10 (“Aardvark”, 2013/10/31)" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Release 14.04 (“Baboon”, 2014/04/30)</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-release-14.12.html">Prev</a> </td><th width="60%" align="center">Appendix B. Release Notes</th><td width="20%" align="right"> <a accesskey="n" href="sec-release-13.10.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-release-14.04"></a>Release 14.04 (“Baboon”, 2014/04/30)</h2></div></div></div><p>This is the second stable release branch of NixOS.  In addition
+to numerous new and upgraded packages and modules, this release has
+the following highlights:
+
+</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Installation on UEFI systems is now supported.  See
+  <a class="xref" href="sec-installation.html#sec-uefi-installation" title="UEFI Installation">the section called “UEFI Installation”</a> for
+  details.</p></li><li class="listitem"><p>Systemd has been updated to version 212, which has
+  <a class="link" href="release-notes-http://cgit.freedesktop.org/systemd/systemd/plain/NEWS?id=v212" target="_top">numerous
+  improvements</a>. NixOS now automatically starts systemd user
+  instances when you log in. You can define global user units through
+  the <code class="option">systemd.unit.*</code> options.</p></li><li class="listitem"><p>NixOS is now based on Glibc 2.19 and GCC
+  4.8.</p></li><li class="listitem"><p>The default Linux kernel has been updated to
+  3.12.</p></li><li class="listitem"><p>KDE has been updated to 4.12.</p></li><li class="listitem"><p>GNOME 3.10 experimental support has been added.</p></li><li class="listitem"><p>Nix has been updated to 1.7 (<a class="link" href="release-notes-http://nixos.org/nix/manual/#ssec-relnotes-1.7" target="_top">details</a>).</p></li><li class="listitem"><p>NixOS now supports fully declarative management of
+  users and groups. If you set <code class="option">users.mutableUsers</code> to
+  <code class="literal">false</code>, then the contents of
+  <code class="filename">/etc/passwd</code> and <code class="filename">/etc/group</code>
+  will be <a class="link" href="release-notes-https://www.usenix.org/legacy/event/lisa02/tech/full_papers/traugott/traugott_html/" target="_top">congruent</a>
+  to your NixOS configuration. For instance, if you remove a user from
+  <code class="option">users.extraUsers</code> and run
+  <span class="command"><strong>nixos-rebuild</strong></span>, the user account will cease to
+  exist. Also, imperative commands for managing users and groups, such
+  as <span class="command"><strong>useradd</strong></span>, are no longer available. If
+  <code class="option">users.mutableUsers</code> is <code class="literal">true</code> (the
+  default), then behaviour is unchanged from NixOS
+  13.10.</p></li><li class="listitem"><p>NixOS now has basic container support, meaning you
+  can easily run a NixOS instance as a container in a NixOS host
+  system. These containers are suitable for testing and
+  experimentation but not production use, since they’re not fully
+  isolated from the host. See <a class="xref" href="ch-containers.html" title="Chapter 19. Container Management">Chapter 19, <em>Container Management</em></a> for
+  details.</p></li><li class="listitem"><p>Systemd units provided by packages can now be
+  overridden from the NixOS configuration. For instance, if a package
+  <code class="literal">foo</code> provides systemd units, you can say:
+
+</p><pre class="programlisting">
+systemd.packages = [ pkgs.foo ];
+</pre><p>
+
+  to enable those units. You can then set or override unit options in
+  the usual way, e.g.
+
+</p><pre class="programlisting">
+systemd.services.foo.wantedBy = [ "multi-user.target" ];
+systemd.services.foo.serviceConfig.MemoryLimit = "512M";
+</pre><p>
+
+  </p></li></ul></div><p>
+
+</p><p>When upgrading from a previous release, please be aware of the
+following incompatible changes:
+
+</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Nixpkgs no longer exposes unfree packages by
+  default. If your NixOS configuration requires unfree packages from
+  Nixpkgs, you need to enable support for them explicitly by setting:
+
+</p><pre class="programlisting">
+nixpkgs.config.allowUnfree = true;
+</pre><p>
+
+  Otherwise, you get an error message such as:
+
+</p><pre class="screen">
+error: package ‘nvidia-x11-331.49-3.12.17’ in ‘…/nvidia-x11/default.nix:56’
+  has an unfree license, refusing to evaluate
+</pre><p>
+
+  </p></li><li class="listitem"><p>The Adobe Flash player is no longer enabled by
+  default in the Firefox and Chromium wrappers. To enable it, you must
+  set:
+
+</p><pre class="programlisting">
+nixpkgs.config.allowUnfree = true;
+nixpkgs.config.firefox.enableAdobeFlash = true; # for Firefox
+nixpkgs.config.chromium.enableAdobeFlash = true; # for Chromium
+</pre><p>
+
+  </p></li><li class="listitem"><p>The firewall is now enabled by default. If you don’t
+  want this, you need to disable it explicitly:
+
+</p><pre class="programlisting">
+networking.firewall.enable = false;
+</pre><p>
+
+  </p></li><li class="listitem"><p>The option
+  <code class="option">boot.loader.grub.memtest86</code> has been renamed to
+  <code class="option">boot.loader.grub.memtest86.enable</code>.</p></li><li class="listitem"><p>The <code class="literal">mysql55</code> service has been
+  merged into the <code class="literal">mysql</code> service, which no longer
+  sets a default for the option
+  <code class="option">services.mysql.package</code>.</p></li><li class="listitem"><p>Package variants are now differentiated by suffixing
+  the name, rather than the version. For instance,
+  <code class="filename">sqlite-3.8.4.3-interactive</code> is now called
+  <code class="filename">sqlite-interactive-3.8.4.3</code>. This ensures that
+  <code class="literal">nix-env -i sqlite</code> is unambiguous, and that
+  <code class="literal">nix-env -u</code> won’t “upgrade”
+  <code class="literal">sqlite</code> to <code class="literal">sqlite-interactive</code>
+  or vice versa. Notably, this change affects the Firefox wrapper
+  (which provides plugins), as it is now called
+  <code class="literal">firefox-wrapper</code>. So when using
+  <span class="command"><strong>nix-env</strong></span>, you should do <code class="literal">nix-env -e
+  firefox; nix-env -i firefox-wrapper</code> if you want to keep
+  using the wrapper. This change does not affect declarative package
+  management, since attribute names like
+  <code class="literal">pkgs.firefoxWrapper</code> were already
+  unambiguous.</p></li><li class="listitem"><p>The symlink <code class="filename">/etc/ca-bundle.crt</code>
+  is gone. Programs should instead use the environment variable
+  <code class="envar">OPENSSL_X509_CERT_FILE</code> (which points to
+  <code class="filename">/etc/ssl/certs/ca-bundle.crt</code>).</p></li></ul></div><p>
+
+</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-release-14.12.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-release-notes.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-release-13.10.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Release 14.12 (“Caterpillar”, 2014/12/30) </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Release 13.10 (“Aardvark”, 2013/10/31)</td></tr></table></div></body></html>

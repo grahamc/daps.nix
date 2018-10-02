@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Warnings and Assertions</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="sec-writing-modules.html" title="Chapter 22. Writing NixOS Modules" /><link rel="prev" href="sec-option-definitions.html" title="Option Definitions" /><link rel="next" href="sec-meta-attributes.html" title="Meta Attributes" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Warnings and Assertions</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-option-definitions.html">Prev</a> </td><th width="60%" align="center">Chapter 22. Writing NixOS Modules</th><td width="20%" align="right"> <a accesskey="n" href="sec-meta-attributes.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-assertions"></a>Warnings and Assertions</h2></div></div></div><p>
+  When configuration problems are detectable in a module, it is a good
+  idea to write an assertion or warning. Doing so provides clear
+  feedback to the user and prevents errors after the build.
+</p><p>
+  Although Nix has the <code class="literal">abort</code> and
+  <code class="literal">builtins.trace</code> <a class="link" href="development-https://nixos.org/nix/manual/#ssec-builtins" target="_top">functions</a> to perform such tasks,
+  they are not ideally suited for NixOS modules. Instead of these
+  functions, you can declare your warnings and assertions using the
+  NixOS module system.
+</p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm140404926942176"></a>Warnings</h3></div></div></div><p>
+  This is an example of using <code class="literal">warnings</code>.
+</p><pre class="programlisting">
+
+{ config, lib, ... }:
+{
+  config = lib.mkIf config.services.foo.enable {
+    warnings =
+      if config.services.foo.bar
+      then [ ''You have enabled the bar feature of the foo service.
+               This is known to cause some specific problems in certain situations.
+               '' ]
+      else [];
+  }
+}
+
+</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm140404926939616"></a>Assertions</h3></div></div></div><p>
+  This example, extracted from the
+  <a class="link" href="development-https://github.com/NixOS/nixpkgs/blob/release-17.09/nixos/modules/services/logging/syslogd.nix" target="_top">
+    <code class="literal">syslogd</code> module
+  </a> shows how to use <code class="literal">assertions</code>. Since there
+  can only be one active syslog daemon at a time, an assertion is useful to
+  prevent such a broken system from being built.
+</p><pre class="programlisting">
+
+{ config, lib, ... }:
+{
+  config = lib.mkIf config.services.syslogd.enable {
+    assertions =
+      [ { assertion = !config.services.rsyslogd.enable;
+          message = "rsyslogd conflicts with syslogd";
+        }
+      ];
+  }
+}
+
+</pre></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-option-definitions.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sec-writing-modules.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-meta-attributes.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Option Definitions </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Meta Attributes</td></tr></table></div></body></html>

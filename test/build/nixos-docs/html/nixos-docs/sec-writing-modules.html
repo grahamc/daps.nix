@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Chapter 22. Writing NixOS Modules</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-development.html" title="Part IV. Development" /><link rel="prev" href="sec-getting-sources.html" title="Chapter 21. Getting the Sources" /><link rel="next" href="sec-option-types.html" title="Options Types" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 22. Writing NixOS Modules</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-getting-sources.html">Prev</a> </td><th width="60%" align="center">Part IV. Development</th><td width="20%" align="right"> <a accesskey="n" href="sec-option-types.html">Next</a></td></tr></table><hr /></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a id="sec-writing-modules"></a>Chapter 22. Writing NixOS Modules</h2></div></div></div><div class="toc"><p><strong>Table of Contents</strong></p><dl class="toc"><dt><span class="section"><a href="sec-writing-modules.html#sec-option-declarations">Option Declarations</a></span></dt><dd><dl><dt><span class="section"><a href="sec-writing-modules.html#sec-option-declarations-eot">Extensible Option
+    Types</a></span></dt></dl></dd><dt><span class="section"><a href="sec-option-types.html">Options Types</a></span></dt><dd><dl><dt><span class="section"><a href="sec-option-types.html#idm140404927101808">Basic Types</a></span></dt><dt><span class="section"><a href="sec-option-types.html#idm140404927083216">Value Types</a></span></dt><dt><span class="section"><a href="sec-option-types.html#idm140404927071872">Composed Types</a></span></dt><dt><span class="section"><a href="sec-option-types.html#section-option-types-submodule">Submodule</a></span></dt><dt><span class="section"><a href="sec-option-types.html#idm140404927023664">Extending types</a></span></dt><dt><span class="section"><a href="sec-option-types.html#idm140404927011792">Custom Types</a></span></dt></dl></dd><dt><span class="section"><a href="sec-option-definitions.html">Option Definitions</a></span></dt><dt><span class="section"><a href="sec-assertions.html">Warnings and Assertions</a></span></dt><dd><dl><dt><span class="section"><a href="sec-assertions.html#idm140404926942176">Warnings</a></span></dt><dt><span class="section"><a href="sec-assertions.html#idm140404926939616">Assertions</a></span></dt></dl></dd><dt><span class="section"><a href="sec-meta-attributes.html">Meta Attributes</a></span></dt><dt><span class="section"><a href="sec-replace-modules.html">Replace Modules</a></span></dt></dl></div><p>NixOS has a modular system for declarative configuration.  This
+system combines multiple <span class="emphasis"><em>modules</em></span> to produce the
+full system configuration.  One of the modules that constitute the
+configuration is <code class="filename">/etc/nixos/configuration.nix</code>.
+Most of the others live in the <a class="link" href="development-https://github.com/NixOS/nixpkgs/tree/master/nixos/modules" target="_top"><code class="filename">nixos/modules</code></a>
+subdirectory of the Nixpkgs tree.</p><p>Each NixOS module is a file that handles one logical aspect of
+the configuration, such as a specific kind of hardware, a service, or
+network settings.  A module configuration does not have to handle
+everything from scratch; it can use the functionality provided by
+other modules for its implementation.  Thus a module can
+<span class="emphasis"><em>declare</em></span> options that can be used by other
+modules, and conversely can <span class="emphasis"><em>define</em></span> options
+provided by other modules in its own implementation.  For example, the
+module <a class="link" href="development-https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/security/pam.nix" target="_top"><code class="filename">pam.nix</code></a>
+declares the option <code class="option">security.pam.services</code> that allows
+other modules (e.g. <a class="link" href="development-https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/networking/ssh/sshd.nix" target="_top"><code class="filename">sshd.nix</code></a>)
+to define PAM services; and it defines the option
+<code class="option">environment.etc</code> (declared by <a class="link" href="development-https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/system/etc/etc.nix" target="_top"><code class="filename">etc.nix</code></a>)
+to cause files to be created in
+<code class="filename">/etc/pam.d</code>.</p><p><a id="para-module-syn"></a>In <a class="xref" href="sec-configuration-syntax.html" title="Chapter 5. Configuration Syntax">Chapter 5, <em>Configuration Syntax</em></a>, we saw the following structure
+of NixOS modules:
+
+</p><pre class="programlisting">
+{ config, pkgs, ... }:
+
+{ <em class="replaceable"><code>option definitions</code></em>
+}
+</pre><p>
+
+This is actually an <span class="emphasis"><em>abbreviated</em></span> form of module
+that only defines options, but does not declare any.  The structure of
+full NixOS modules is shown in <a class="xref" href="sec-writing-modules.html#ex-module-syntax" title="Example 22.1. Structure of NixOS Modules">Example 22.1, “Structure of NixOS Modules”</a>.</p><div class="example"><a id="ex-module-syntax"></a><p class="title"><strong>Example 22.1. Structure of NixOS Modules</strong></p><div class="example-contents"><pre class="programlisting">
+{ config, pkgs, ... }: <a id="module-syntax-1"></a><span><img src="static/images/callouts/1.png" alt="1" border="0" /></span>
+
+{
+  imports =
+    [ <em class="replaceable"><code>paths of other modules</code></em> <a id="module-syntax-2"></a><span><img src="static/images/callouts/2.png" alt="2" border="0" /></span>
+    ];
+
+  options = {
+    <em class="replaceable"><code>option declarations</code></em> <a id="module-syntax-3"></a><span><img src="static/images/callouts/3.png" alt="3" border="0" /></span>
+  };
+
+  config = {
+    <em class="replaceable"><code>option definitions</code></em> <a id="module-syntax-4"></a><span><img src="static/images/callouts/4.png" alt="4" border="0" /></span>
+  };
+}</pre></div></div><br class="example-break" /><p>The meaning of each part is as follows.
+
+</p><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><a href="#module-syntax-1"><span><img src="static/images/callouts/1.png" alt="1" border="0" /></span></a> </p></td><td valign="top" align="left"><p>This line makes the current Nix expression a function.  The
+    variable <code class="varname">pkgs</code> contains Nixpkgs, while
+    <code class="varname">config</code> contains the full system configuration.
+    This line can be omitted if there is no reference to
+    <code class="varname">pkgs</code> and <code class="varname">config</code> inside the
+    module.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#module-syntax-2"><span><img src="static/images/callouts/2.png" alt="2" border="0" /></span></a> </p></td><td valign="top" align="left"><p>This list enumerates the paths to other NixOS modules that
+    should be included in the evaluation of the system configuration.
+    A default set of modules is defined in the file
+    <code class="filename">modules/module-list.nix</code>.  These don't need to
+    be added in the import list.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#module-syntax-3"><span><img src="static/images/callouts/3.png" alt="3" border="0" /></span></a> </p></td><td valign="top" align="left"><p>The attribute <code class="varname">options</code> is a nested set of
+    <span class="emphasis"><em>option declarations</em></span> (described below).</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#module-syntax-4"><span><img src="static/images/callouts/4.png" alt="4" border="0" /></span></a> </p></td><td valign="top" align="left"><p>The attribute <code class="varname">config</code> is a nested set of
+    <span class="emphasis"><em>option definitions</em></span> (also described
+    below).</p></td></tr></table></div><p>
+
+</p><p><a class="xref" href="sec-writing-modules.html#locate-example" title="Example 22.2. NixOS Module for the “locate” Service">Example 22.2, “NixOS Module for the “locate” Service”</a> shows a module that handles
+the regular update of the “locate” database, an index of all files in
+the file system.  This module declares two options that can be defined
+by other modules (typically the user’s
+<code class="filename">configuration.nix</code>):
+<code class="option">services.locate.enable</code> (whether the database should
+be updated) and <code class="option">services.locate.interval</code> (when the
+update should be done).  It implements its functionality by defining
+two options declared by other modules:
+<code class="option">systemd.services</code> (the set of all systemd services)
+and <code class="option">systemd.timers</code> (the list of commands to be
+executed periodically by <span class="command"><strong>systemd</strong></span>).</p><div class="example"><a id="locate-example"></a><p class="title"><strong>Example 22.2. NixOS Module for the “locate” Service</strong></p><div class="example-contents"><pre class="programlisting">
+{ config, lib, pkgs, ... }:
+
+with lib;
+
+let
+  cfg = config.services.locate;
+in {
+  options.services.locate = {
+    enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        If enabled, NixOS will periodically update the database of
+        files used by the <span class="command"><strong>locate</strong></span> command.
+      '';
+    };
+
+    interval = mkOption {
+      type = types.str;
+      default = "02:15";
+      example = "hourly";
+      description = ''
+        Update the locate database at this interval. Updates by
+        default at 2:15 AM every day.
+
+        The format is described in
+        <span class="citerefentry"><span class="refentrytitle">systemd.time</span>(7)</span>.
+      '';
+    };
+
+    # Other options omitted for documentation
+  };
+
+  config = {
+    systemd.services.update-locatedb =
+      { description = "Update Locate Database";
+        path  = [ pkgs.su ];
+        script =
+          ''
+            mkdir -m 0755 -p $(dirname ${toString cfg.output})
+            exec updatedb \
+              --localuser=${cfg.localuser} \
+              ${optionalString (!cfg.includeStore) "--prunepaths='/nix/store'"} \
+              --output=${toString cfg.output} ${concatStringsSep " " cfg.extraFlags}
+          '';
+      };
+
+    systemd.timers.update-locatedb = mkIf cfg.enable
+      { description = "Update timer for locate database";
+        partOf      = [ "update-locatedb.service" ];
+        wantedBy    = [ "timers.target" ];
+        timerConfig.OnCalendar = cfg.interval;
+      };
+  };
+}
+</pre></div></div><br class="example-break" /><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-option-declarations"></a>Option Declarations</h2></div></div></div><p>An option declaration specifies the name, type and description
+of a NixOS configuration option.  It is invalid to define an option
+that hasn’t been declared in any module.  An option declaration
+generally looks like this:
+
+</p><pre class="programlisting">
+options = {
+  <em class="replaceable"><code>name</code></em> = mkOption {
+    type = <em class="replaceable"><code>type specification</code></em>;
+    default = <em class="replaceable"><code>default value</code></em>;
+    example = <em class="replaceable"><code>example value</code></em>;
+    description = "<em class="replaceable"><code>Description for use in the NixOS manual.</code></em>";
+  };
+};
+</pre><p>
+
+</p><p>The function <code class="varname">mkOption</code> accepts the following arguments.
+
+</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="varname">type</code></span></dt><dd><p>The type of the option (see <a class="xref" href="sec-option-types.html" title="Options Types">the section called “Options Types”</a>).
+      It may be omitted, but that’s not advisable since it may lead to errors
+      that are hard to diagnose.</p></dd><dt><span class="term"><code class="varname">default</code></span></dt><dd><p>The default value used if no value is defined by any
+      module.  A default is not required; but if a default is not given,
+      then users of the module will have to define the value of the
+      option, otherwise an error will be thrown.</p></dd><dt><span class="term"><code class="varname">example</code></span></dt><dd><p>An example value that will be shown in the NixOS manual.</p></dd><dt><span class="term"><code class="varname">description</code></span></dt><dd><p>A textual description of the option, in DocBook format,
+      that will be included in the NixOS manual.</p></dd></dl></div><p>
+
+</p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="sec-option-declarations-eot"></a>Extensible Option
+    Types</h3></div></div></div><p>Extensible option types is a feature that allow to extend certain types
+    declaration through multiple module files.
+    This feature only work with a restricted set of types, namely
+    <code class="literal">enum</code> and <code class="literal">submodules</code> and any composed
+    forms of them.</p><p>Extensible option types can be used for <code class="literal">enum</code> options
+    that affects multiple modules, or as an alternative to related
+    <code class="literal">enable</code> options.</p><p>As an example, we will take the case of display managers. There is a
+    central display manager module for generic display manager options and a
+    module file per display manager backend (slim, sddm, gdm ...).
+  </p><p>There are two approach to this module structure:
+
+  </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Managing the display managers independently by adding an
+        enable option to every display manager module backend. (NixOS)</p></li><li class="listitem"><p>Managing the display managers in the central module by
+        adding an option to select which display manager backend to use.</p></li></ul></div><p>
+  </p><p>Both approaches have problems.</p><p>Making backends independent can quickly become hard to manage. For
+    display managers, there can be only one enabled at a time, but the type
+    system can not enforce this restriction as there is no relation between
+    each backend <code class="literal">enable</code> option. As a result, this restriction
+    has to be done explicitely by adding assertions in each display manager
+    backend module.</p><p>On the other hand, managing the display managers backends in the
+    central module will require to change the central module option every time
+    a new backend is added or removed.</p><p>By using extensible option types, it is possible to create a placeholder
+    option in the central module (<a class="xref" href="sec-writing-modules.html#ex-option-declaration-eot-service" title="Example 22.3. Extensible type placeholder in the service module">Example 22.3, “Extensible type
+    placeholder in the service module”</a>), and to extend it in each backend module (<a class="xref" href="sec-writing-modules.html#ex-option-declaration-eot-backend-slim" title="Example 22.4. Extending services.xserver.displayManager.enable in the slim module">Example 22.4, “Extending
+    <code class="literal">services.xserver.displayManager.enable</code> in the
+    <code class="literal">slim</code> module”</a>, <a class="xref" href="sec-writing-modules.html#ex-option-declaration-eot-backend-sddm" title="Example 22.5. Extending services.xserver.displayManager.enable in the sddm module">Example 22.5, “Extending
+    <code class="literal">services.xserver.displayManager.enable</code> in the 
+    <code class="literal">sddm</code> module”</a>).</p><p>As a result, <code class="literal">displayManager.enable</code> option values can
+  be added without changing the main service module file and the type system
+  automatically enforce that there can only be a single display manager
+  enabled.</p><div class="example"><a id="ex-option-declaration-eot-service"></a><p class="title"><strong>Example 22.3. Extensible type
+    placeholder in the service module</strong></p><div class="example-contents"><pre class="screen">
+services.xserver.displayManager.enable = mkOption {
+  description = "Display manager to use";
+  type = with types; nullOr (enum [ ]);
+};</pre></div></div><br class="example-break" /><div class="example"><a id="ex-option-declaration-eot-backend-slim"></a><p class="title"><strong>Example 22.4. Extending
+    <code class="literal">services.xserver.displayManager.enable</code> in the
+    <code class="literal">slim</code> module</strong></p><div class="example-contents"><pre class="screen">
+services.xserver.displayManager.enable = mkOption {
+  type = with types; nullOr (enum [ "slim" ]);
+};</pre></div></div><br class="example-break" /><div class="example"><a id="ex-option-declaration-eot-backend-sddm"></a><p class="title"><strong>Example 22.5. Extending
+    <code class="literal">services.xserver.displayManager.enable</code> in the 
+    <code class="literal">sddm</code> module</strong></p><div class="example-contents"><pre class="screen">
+services.xserver.displayManager.enable = mkOption {
+  type = with types; nullOr (enum [ "sddm" ]);
+};</pre></div></div><br class="example-break" /><p>The placeholder declaration is a standard <code class="literal">mkOption</code>
+  declaration, but it is important that extensible option declarations only use
+  the <code class="literal">type</code> argument.</p><p>Extensible option types work with any of the composed variants of
+  <code class="literal">enum</code> such as
+  <code class="literal">with types; nullOr (enum [ "foo" "bar" ])</code>
+  or <code class="literal">with types; listOf (enum [ "foo" "bar" ])</code>.</p></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-getting-sources.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-development.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-option-types.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 21. Getting the Sources </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Options Types</td></tr></table></div></body></html>

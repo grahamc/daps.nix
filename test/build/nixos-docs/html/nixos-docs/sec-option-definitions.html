@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Option Definitions</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="sec-writing-modules.html" title="Chapter 22. Writing NixOS Modules" /><link rel="prev" href="sec-option-types.html" title="Options Types" /><link rel="next" href="sec-assertions.html" title="Warnings and Assertions" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Option Definitions</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-option-types.html">Prev</a> </td><th width="60%" align="center">Chapter 22. Writing NixOS Modules</th><td width="20%" align="right"> <a accesskey="n" href="sec-assertions.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-option-definitions"></a>Option Definitions</h2></div></div></div><p>Option definitions are generally straight-forward bindings of values to option names, like
+
+</p><pre class="programlisting">
+config = {
+  services.httpd.enable = true;
+};
+</pre><p>
+
+However, sometimes you need to wrap an option definition or set of
+option definitions in a <span class="emphasis"><em>property</em></span> to achieve
+certain effects:</p><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a id="idm140404926962800"></a>Delaying Conditionals</h3></div></div></div><p>If a set of option definitions is conditional on the value of
+another option, you may need to use <code class="varname">mkIf</code>.
+Consider, for instance:
+
+</p><pre class="programlisting">
+config = if config.services.httpd.enable then {
+  environment.systemPackages = [ <em class="replaceable"><code>...</code></em> ];
+  <em class="replaceable"><code>...</code></em>
+} else {};
+</pre><p>
+
+This definition will cause Nix to fail with an “infinite recursion”
+error.  Why?  Because the value of
+<code class="option">config.services.httpd.enable</code> depends on the value
+being constructed here.  After all, you could also write the clearly
+circular and contradictory:
+</p><pre class="programlisting">
+config = if config.services.httpd.enable then {
+  services.httpd.enable = false;
+} else {
+  services.httpd.enable = true;
+};
+</pre><p>
+
+The solution is to write:
+
+</p><pre class="programlisting">
+config = mkIf config.services.httpd.enable {
+  environment.systemPackages = [ <em class="replaceable"><code>...</code></em> ];
+  <em class="replaceable"><code>...</code></em>
+};
+</pre><p>
+
+The special function <code class="varname">mkIf</code> causes the evaluation of
+the conditional to be “pushed down” into the individual definitions,
+as if you had written:
+
+</p><pre class="programlisting">
+config = {
+  environment.systemPackages = if config.services.httpd.enable then [ <em class="replaceable"><code>...</code></em> ] else [];
+  <em class="replaceable"><code>...</code></em>
+};
+</pre><p>
+
+</p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a id="idm140404926955056"></a>Setting Priorities</h3></div></div></div><p>A module can override the definitions of an option in other
+modules by setting a <span class="emphasis"><em>priority</em></span>.  All option
+definitions that do not have the lowest priority value are discarded.
+By default, option definitions have priority 1000.  You can specify an
+explicit priority by using <code class="varname">mkOverride</code>, e.g.
+
+</p><pre class="programlisting">
+services.openssh.enable = mkOverride 10 false;
+</pre><p>
+
+This definition causes all other definitions with priorities above 10
+to be discarded.  The function <code class="varname">mkForce</code> is
+equal to <code class="varname">mkOverride 50</code>.</p></div><div class="simplesect"><div class="titlepage"><div><div><h3 class="title"><a id="idm140404926951296"></a>Merging Configurations</h3></div></div></div><p>In conjunction with <code class="literal">mkIf</code>, it is sometimes
+useful for a module to return multiple sets of option definitions, to
+be merged together as if they were declared in separate modules.  This
+can be done using <code class="varname">mkMerge</code>:
+
+</p><pre class="programlisting">
+config = mkMerge
+  [ # Unconditional stuff.
+    { environment.systemPackages = [ <em class="replaceable"><code>...</code></em> ];
+    }
+    # Conditional stuff.
+    (mkIf config.services.bla.enable {
+      environment.systemPackages = [ <em class="replaceable"><code>...</code></em> ];
+    })
+  ];
+</pre><p>
+
+</p></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-option-types.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sec-writing-modules.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-assertions.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Options Types </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Warnings and Assertions</td></tr></table></div></body></html>

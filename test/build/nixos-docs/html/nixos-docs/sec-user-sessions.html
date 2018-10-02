@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Chapter 15. User Sessions</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-running.html" title="Part III. Administration" /><link rel="prev" href="sec-rebooting.html" title="Chapter 14. Rebooting and Shutting Down" /><link rel="next" href="sec-cgroups.html" title="Chapter 16. Control Groups" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 15. User Sessions</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-rebooting.html">Prev</a> </td><th width="60%" align="center">Part III. Administration</th><td width="20%" align="right"> <a accesskey="n" href="sec-cgroups.html">Next</a></td></tr></table><hr /></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a id="sec-user-sessions"></a>Chapter 15. User Sessions</h2></div></div></div><p>Systemd keeps track of all users who are logged into the system
+(e.g. on a virtual console or remotely via SSH).  The command
+<span class="command"><strong>loginctl</strong></span> allows querying and manipulating user
+sessions.  For instance, to list all user sessions:
+
+</p><pre class="screen">
+$ loginctl
+   SESSION        UID USER             SEAT
+        c1        500 eelco            seat0
+        c3          0 root             seat0
+        c4        500 alice
+</pre><p>
+
+This shows that two users are logged in locally, while another is
+logged in remotely.  (“Seats” are essentially the combinations of
+displays and input devices attached to the system; usually, there is
+only one seat.)  To get information about a session:
+
+</p><pre class="screen">
+$ loginctl session-status c3
+c3 - root (0)
+           Since: Tue, 2013-01-08 01:17:56 CET; 4min 42s ago
+          Leader: 2536 (login)
+            Seat: seat0; vc3
+             TTY: /dev/tty3
+         Service: login; type tty; class user
+           State: online
+          CGroup: name=systemd:/user/root/c3
+                  ├─ 2536 /nix/store/10mn4xip9n7y9bxqwnsx7xwx2v2g34xn-shadow-4.1.5.1/bin/login --
+                  ├─10339 -bash
+                  └─10355 w3m nixos.org
+</pre><p>
+
+This shows that the user is logged in on virtual console 3.  It also
+lists the processes belonging to this session.  Since systemd keeps
+track of this, you can terminate a session in a way that ensures that
+all the session’s processes are gone:
+
+</p><pre class="screen">
+# loginctl terminate-session c3
+</pre><p>
+
+</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-rebooting.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-running.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-cgroups.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 14. Rebooting and Shutting Down </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 16. Control Groups</td></tr></table></div></body></html>

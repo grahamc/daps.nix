@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Chapter 6. Package Management</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-configuration.html" title="Part II. Configuration" /><link rel="prev" href="sec-nix-syntax-summary.html" title="Syntax Summary" /><link rel="next" href="sec-ad-hoc-packages.html" title="Ad-Hoc Package Management" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 6. Package Management</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-nix-syntax-summary.html">Prev</a> </td><th width="60%" align="center">Part II. Configuration</th><td width="20%" align="right"> <a accesskey="n" href="sec-ad-hoc-packages.html">Next</a></td></tr></table><hr /></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a id="sec-package-management"></a>Chapter 6. Package Management</h2></div></div></div><div class="toc"><p><strong>Table of Contents</strong></p><dl class="toc"><dt><span class="section"><a href="sec-package-management.html#sec-declarative-package-mgmt">Declarative Package Management</a></span></dt><dd><dl><dt><span class="section"><a href="sec-package-management.html#sec-customising-packages">Customising Packages</a></span></dt><dt><span class="section"><a href="sec-package-management.html#sec-custom-packages">Adding Custom Packages</a></span></dt></dl></dd><dt><span class="section"><a href="sec-ad-hoc-packages.html">Ad-Hoc Package Management</a></span></dt></dl></div><p>This section describes how to add additional packages to your
+system.  NixOS has two distinct styles of package management:
+
+</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="emphasis"><em>Declarative</em></span>, where you declare
+  what packages you want in your
+  <code class="filename">configuration.nix</code>.  Every time you run
+  <span class="command"><strong>nixos-rebuild</strong></span>, NixOS will ensure that you get a
+  consistent set of binaries corresponding to your
+  specification.</p></li><li class="listitem"><p><span class="emphasis"><em>Ad hoc</em></span>, where you install,
+  upgrade and uninstall packages via the <span class="command"><strong>nix-env</strong></span>
+  command.  This style allows mixing packages from different Nixpkgs
+  versions.  It’s the only choice for non-root
+  users.</p></li></ul></div><p>
+
+</p><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-declarative-package-mgmt"></a>Declarative Package Management</h2></div></div></div><p>With declarative package management, you specify which packages
+you want on your system by setting the option
+<code class="option">environment.systemPackages</code>.  For instance, adding the
+following line to <code class="filename">configuration.nix</code> enables the
+Mozilla Thunderbird email application:
+
+</p><pre class="programlisting">
+environment.systemPackages = [ pkgs.thunderbird ];
+</pre><p>
+
+The effect of this specification is that the Thunderbird package from
+Nixpkgs will be built or downloaded as part of the system when you run
+<span class="command"><strong>nixos-rebuild switch</strong></span>.</p><p>You can get a list of the available packages as follows:
+</p><pre class="screen">
+$ nix-env -qaP '*' --description
+nixos.firefox   firefox-23.0   Mozilla Firefox - the browser, reloaded
+<em class="replaceable"><code>...</code></em>
+</pre><p>
+
+The first column in the output is the <span class="emphasis"><em>attribute
+name</em></span>, such as
+<code class="literal">nixos.thunderbird</code>. (The
+<code class="literal">nixos</code> prefix allows distinguishing between
+different channels that you might have.)</p><p>To “uninstall” a package, simply remove it from
+<code class="option">environment.systemPackages</code> and run
+<span class="command"><strong>nixos-rebuild switch</strong></span>.</p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="sec-customising-packages"></a>Customising Packages</h3></div></div></div><p>Some packages in Nixpkgs have options to enable or disable
+optional functionality or change other aspects of the package.  For
+instance, the Firefox wrapper package (which provides Firefox with a
+set of plugins such as the Adobe Flash player) has an option to enable
+the Google Talk plugin.  It can be set in
+<code class="filename">configuration.nix</code> as follows:
+
+<code class="filename">
+nixpkgs.config.firefox.enableGoogleTalkPlugin = true;
+</code>
+</p><div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Warning</h3><p>Unfortunately, Nixpkgs currently lacks a way to query
+available configuration options.</p></div><p>Apart from high-level options, it’s possible to tweak a package
+in almost arbitrary ways, such as changing or disabling dependencies
+of a package.  For instance, the Emacs package in Nixpkgs by default
+has a dependency on GTK+ 2.  If you want to build it against GTK+ 3,
+you can specify that as follows:
+
+</p><pre class="programlisting">
+environment.systemPackages = [ (pkgs.emacs.override { gtk = pkgs.gtk3; }) ];
+</pre><p>
+
+The function <code class="varname">override</code> performs the call to the Nix
+function that produces Emacs, with the original arguments amended by
+the set of arguments specified by you.  So here the function argument
+<code class="varname">gtk</code> gets the value <code class="literal">pkgs.gtk3</code>,
+causing Emacs to depend on GTK+ 3.  (The parentheses are necessary
+because in Nix, function application binds more weakly than list
+construction, so without them,
+<code class="literal">environment.systemPackages</code> would be a list with two
+elements.)</p><p>Even greater customisation is possible using the function
+<code class="varname">overrideAttrs</code>.  While the
+<code class="varname">override</code> mechanism above overrides the arguments of
+a package function, <code class="varname">overrideAttrs</code> allows
+changing the <span class="emphasis"><em>attributes</em></span> passed to <code class="literal">mkDerivation</code>.
+This permits changing any aspect of the package, such as the source code.
+For instance, if you want to override the source code of Emacs, you
+can say:
+
+</p><pre class="programlisting">
+environment.systemPackages = [
+  (pkgs.emacs.overrideAttrs (oldAttrs: {
+    name = "emacs-25.0-pre";
+    src = /path/to/my/emacs/tree;
+  }))
+];
+</pre><p>
+
+Here, <code class="varname">overrideAttrs</code> takes the Nix derivation
+specified by <code class="varname">pkgs.emacs</code> and produces a new
+derivation in which the original’s <code class="literal">name</code> and
+<code class="literal">src</code> attribute have been replaced by the given
+values by re-calling <code class="literal">stdenv.mkDerivation</code>.
+The original attributes are accessible via the function argument,
+which is conventionally named <code class="varname">oldAttrs</code>.</p><p>The overrides shown above are not global.  They do not affect
+the original package; other packages in Nixpkgs continue to depend on
+the original rather than the customised package.  This means that if
+another package in your system depends on the original package, you
+end up with two instances of the package.  If you want to have
+everything depend on your customised instance, you can apply a
+<span class="emphasis"><em>global</em></span> override as follows:
+
+</p><pre class="screen">
+nixpkgs.config.packageOverrides = pkgs:
+  { emacs = pkgs.emacs.override { gtk = pkgs.gtk3; };
+  };
+</pre><p>
+
+The effect of this definition is essentially equivalent to modifying
+the <code class="literal">emacs</code> attribute in the Nixpkgs source tree.
+Any package in Nixpkgs that depends on <code class="literal">emacs</code> will
+be passed your customised instance.  (However, the value
+<code class="literal">pkgs.emacs</code> in
+<code class="varname">nixpkgs.config.packageOverrides</code> refers to the
+original rather than overridden instance, to prevent an infinite
+recursion.)</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="sec-custom-packages"></a>Adding Custom Packages</h3></div></div></div><p>It’s possible that a package you need is not available in NixOS.
+In that case, you can do two things.  First, you can clone the Nixpkgs
+repository, add the package to your clone, and (optionally) submit a
+patch or pull request to have it accepted into the main Nixpkgs
+repository.  This is described in detail in the <a class="link" href="configuration-http://nixos.org/nixpkgs/manual" target="_top">Nixpkgs manual</a>.
+In short, you clone Nixpkgs:
+
+</p><pre class="screen">
+$ git clone git://github.com/NixOS/nixpkgs.git
+$ cd nixpkgs
+</pre><p>
+
+Then you write and test the package as described in the Nixpkgs
+manual.  Finally, you add it to
+<code class="literal">environment.systemPackages</code>, e.g.
+
+</p><pre class="programlisting">
+environment.systemPackages = [ pkgs.my-package ];
+</pre><p>
+
+and you run <span class="command"><strong>nixos-rebuild</strong></span>, specifying your own
+Nixpkgs tree:
+
+</p><pre class="screen">
+# nixos-rebuild switch -I nixpkgs=/path/to/my/nixpkgs</pre><p>
+
+</p><p>The second possibility is to add the package outside of the
+Nixpkgs tree.  For instance, here is how you specify a build of the
+<a class="link" href="configuration-http://www.gnu.org/software/hello/" target="_top">GNU Hello</a>
+package directly in <code class="filename">configuration.nix</code>:
+
+</p><pre class="programlisting">
+environment.systemPackages =
+  let
+    my-hello = with pkgs; stdenv.mkDerivation rec {
+      name = "hello-2.8";
+      src = fetchurl {
+        url = "mirror://gnu/hello/${name}.tar.gz";
+        sha256 = "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6";
+      };
+    };
+  in
+  [ my-hello ];
+</pre><p>
+
+Of course, you can also move the definition of
+<code class="literal">my-hello</code> into a separate Nix expression, e.g.
+</p><pre class="programlisting">
+environment.systemPackages = [ (import ./my-hello.nix) ];
+</pre><p>
+where <code class="filename">my-hello.nix</code> contains:
+</p><pre class="programlisting">
+with import &lt;nixpkgs&gt; {}; # bring all of Nixpkgs into scope
+
+stdenv.mkDerivation rec {
+  name = "hello-2.8";
+  src = fetchurl {
+    url = "mirror://gnu/hello/${name}.tar.gz";
+    sha256 = "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6";
+  };
+}
+</pre><p>
+
+This allows testing the package easily:
+</p><pre class="screen">
+$ nix-build my-hello.nix
+$ ./result/bin/hello
+Hello, world!
+</pre><p>
+
+</p></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-nix-syntax-summary.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-configuration.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-ad-hoc-packages.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Syntax Summary </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Ad-Hoc Package Management</td></tr></table></div></body></html>

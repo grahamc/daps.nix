@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Chapter 13. Service Management</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-running.html" title="Part III. Administration" /><link rel="prev" href="ch-running.html" title="Part III. Administration" /><link rel="next" href="sec-rebooting.html" title="Chapter 14. Rebooting and Shutting Down" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 13. Service Management</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch-running.html">Prev</a> </td><th width="60%" align="center">Part III. Administration</th><td width="20%" align="right"> <a accesskey="n" href="sec-rebooting.html">Next</a></td></tr></table><hr /></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a id="sec-systemctl"></a>Chapter 13. Service Management</h2></div></div></div><p>In NixOS, all system services are started and monitored using
+the systemd program.  Systemd is the “init” process of the system
+(i.e. PID 1), the parent of all other processes.  It manages a set of
+so-called “units”, which can be things like system services
+(programs), but also mount points, swap files, devices, targets
+(groups of units) and more.  Units can have complex dependencies; for
+instance, one unit can require that another unit must be successfully
+started before the first unit can be started.  When the system boots,
+it starts a unit named <code class="literal">default.target</code>; the
+dependencies of this unit cause all system services to be started,
+file systems to be mounted, swap files to be activated, and so
+on.</p><p>The command <span class="command"><strong>systemctl</strong></span> is the main way to
+interact with <span class="command"><strong>systemd</strong></span>.  Without any arguments, it
+shows the status of active units:
+
+</p><pre class="screen">
+$ systemctl
+-.mount          loaded active mounted   /
+swapfile.swap    loaded active active    /swapfile
+sshd.service     loaded active running   SSH Daemon
+graphical.target loaded active active    Graphical Interface
+<em class="replaceable"><code>...</code></em>
+</pre><p>
+
+</p><p>You can ask for detailed status information about a unit, for
+instance, the PostgreSQL database service:
+
+</p><pre class="screen">
+$ systemctl status postgresql.service
+postgresql.service - PostgreSQL Server
+          Loaded: loaded (/nix/store/pn3q73mvh75gsrl8w7fdlfk3fq5qm5mw-unit/postgresql.service)
+          Active: active (running) since Mon, 2013-01-07 15:55:57 CET; 9h ago
+        Main PID: 2390 (postgres)
+          CGroup: name=systemd:/system/postgresql.service
+                  ├─2390 postgres
+                  ├─2418 postgres: writer process
+                  ├─2419 postgres: wal writer process
+                  ├─2420 postgres: autovacuum launcher process
+                  ├─2421 postgres: stats collector process
+                  └─2498 postgres: zabbix zabbix [local] idle
+
+Jan 07 15:55:55 hagbard postgres[2394]: [1-1] LOG:  database system was shut down at 2013-01-07 15:55:05 CET
+Jan 07 15:55:57 hagbard postgres[2390]: [1-1] LOG:  database system is ready to accept connections
+Jan 07 15:55:57 hagbard postgres[2420]: [1-1] LOG:  autovacuum launcher started
+Jan 07 15:55:57 hagbard systemd[1]: Started PostgreSQL Server.
+</pre><p>
+
+Note that this shows the status of the unit (active and running), all
+the processes belonging to the service, as well as the most recent log
+messages from the service.
+
+</p><p>Units can be stopped, started or restarted:
+
+</p><pre class="screen">
+# systemctl stop postgresql.service
+# systemctl start postgresql.service
+# systemctl restart postgresql.service
+</pre><p>
+
+These operations are synchronous: they wait until the service has
+finished starting or stopping (or has failed).  Starting a unit will
+cause the dependencies of that unit to be started as well (if
+necessary).</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch-running.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-running.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-rebooting.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Part III. Administration </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 14. Rebooting and Shutting Down</td></tr></table></div></body></html>

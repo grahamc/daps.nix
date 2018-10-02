@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Rolling Back Configuration Changes</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-troubleshooting.html" title="Chapter 20. Troubleshooting" /><link rel="prev" href="sec-maintenance-mode.html" title="Maintenance Mode" /><link rel="next" href="sec-nix-store-corruption.html" title="Nix Store Corruption" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Rolling Back Configuration Changes</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-maintenance-mode.html">Prev</a> </td><th width="60%" align="center">Chapter 20. Troubleshooting</th><td width="20%" align="right"> <a accesskey="n" href="sec-nix-store-corruption.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-rollback"></a>Rolling Back Configuration Changes</h2></div></div></div><p>After running <span class="command"><strong>nixos-rebuild</strong></span> to switch to a
+new configuration, you may find that the new configuration doesn’t
+work very well.  In that case, there are several ways to return to a
+previous configuration.</p><p>First, the GRUB boot manager allows you to boot into any
+previous configuration that hasn’t been garbage-collected.  These
+configurations can be found under the GRUB submenu “NixOS - All
+configurations”.  This is especially useful if the new configuration
+fails to boot.  After the system has booted, you can make the selected
+configuration the default for subsequent boots:
+
+</p><pre class="screen">
+# /run/current-system/bin/switch-to-configuration boot</pre><p>
+
+</p><p>Second, you can switch to the previous configuration in a running
+system:
+
+</p><pre class="screen">
+# nixos-rebuild switch --rollback</pre><p>
+
+This is equivalent to running:
+
+</p><pre class="screen">
+# /nix/var/nix/profiles/system-<em class="replaceable"><code>N</code></em>-link/bin/switch-to-configuration switch</pre><p>
+
+where <em class="replaceable"><code>N</code></em> is the number of the NixOS system
+configuration.  To get a list of the available configurations, do:
+
+</p><pre class="screen">
+$ ls -l /nix/var/nix/profiles/system-*-link
+<em class="replaceable"><code>...</code></em>
+lrwxrwxrwx 1 root root 78 Aug 12 13:54 /nix/var/nix/profiles/system-268-link -&gt; /nix/store/202b...-nixos-13.07pre4932_5a676e4-4be1055
+</pre><p>
+
+</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-maintenance-mode.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-troubleshooting.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-nix-store-corruption.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Maintenance Mode </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Nix Store Corruption</td></tr></table></div></body></html>

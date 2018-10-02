@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Nix Store Corruption</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-troubleshooting.html" title="Chapter 20. Troubleshooting" /><link rel="prev" href="sec-rollback.html" title="Rolling Back Configuration Changes" /><link rel="next" href="sec-nix-network-issues.html" title="Network Problems" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Nix Store Corruption</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-rollback.html">Prev</a> </td><th width="60%" align="center">Chapter 20. Troubleshooting</th><td width="20%" align="right"> <a accesskey="n" href="sec-nix-network-issues.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-nix-store-corruption"></a>Nix Store Corruption</h2></div></div></div><p>After a system crash, it’s possible for files in the Nix store
+to become corrupted.  (For instance, the Ext4 file system has the
+tendency to replace un-synced files with zero bytes.)  NixOS tries
+hard to prevent this from happening: it performs a
+<span class="command"><strong>sync</strong></span> before switching to a new configuration, and
+Nix’s database is fully transactional.  If corruption still occurs,
+you may be able to fix it automatically.</p><p>If the corruption is in a path in the closure of the NixOS
+system configuration, you can fix it by doing
+
+</p><pre class="screen">
+# nixos-rebuild switch --repair
+</pre><p>
+
+This will cause Nix to check every path in the closure, and if its
+cryptographic hash differs from the hash recorded in Nix’s database,
+the path is rebuilt or redownloaded.</p><p>You can also scan the entire Nix store for corrupt paths:
+
+</p><pre class="screen">
+# nix-store --verify --check-contents --repair
+</pre><p>
+
+Any corrupt paths will be redownloaded if they’re available in a
+binary cache; otherwise, they cannot be repaired.</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-rollback.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-troubleshooting.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-nix-network-issues.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Rolling Back Configuration Changes </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Network Problems</td></tr></table></div></body></html>

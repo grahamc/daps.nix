@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Chapter 19. Container Management</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-running.html" title="Part III. Administration" /><link rel="prev" href="sec-nix-gc.html" title="Chapter 18. Cleaning the Nix Store" /><link rel="next" href="sec-declarative-containers.html" title="Declarative Container Specification" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 19. Container Management</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-nix-gc.html">Prev</a> </td><th width="60%" align="center">Part III. Administration</th><td width="20%" align="right"> <a accesskey="n" href="sec-declarative-containers.html">Next</a></td></tr></table><hr /></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a id="ch-containers"></a>Chapter 19. Container Management</h2></div></div></div><div class="toc"><p><strong>Table of Contents</strong></p><dl class="toc"><dt><span class="section"><a href="ch-containers.html#sec-imperative-containers">Imperative Container Management</a></span></dt><dt><span class="section"><a href="sec-declarative-containers.html">Declarative Container Specification</a></span></dt><dt><span class="section"><a href="sec-container-networking.html">Container Networking</a></span></dt></dl></div><p>NixOS allows you to easily run other NixOS instances as
+<span class="emphasis"><em>containers</em></span>. Containers are a light-weight
+approach to virtualisation that runs software in the container at the
+same speed as in the host system. NixOS containers share the Nix store
+of the host, making container creation very efficient.</p><div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Warning</h3><p>Currently, NixOS containers are not perfectly isolated
+from the host system. This means that a user with root access to the
+container can do things that affect the host. So you should not give
+container root access to untrusted users.</p></div><p>NixOS containers can be created in two ways: imperatively, using
+the command <span class="command"><strong>nixos-container</strong></span>, and declaratively, by
+specifying them in your <code class="filename">configuration.nix</code>. The
+declarative approach implies that containers get upgraded along with
+your host system when you run <span class="command"><strong>nixos-rebuild</strong></span>, which
+is often not what you want. By contrast, in the imperative approach,
+containers are configured and updated independently from the host
+system.</p><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-imperative-containers"></a>Imperative Container Management</h2></div></div></div><p>We’ll cover imperative container management using
+<span class="command"><strong>nixos-container</strong></span> first.
+Be aware that container management is currently only possible
+as <code class="literal">root</code>.</p><p>You create a container with
+identifier <code class="literal">foo</code> as follows:
+
+</p><pre class="screen">
+# nixos-container create foo
+</pre><p>
+
+This creates the container’s root directory in
+<code class="filename">/var/lib/containers/foo</code> and a small configuration
+file in <code class="filename">/etc/containers/foo.conf</code>. It also builds
+the container’s initial system configuration and stores it in
+<code class="filename">/nix/var/nix/profiles/per-container/foo/system</code>. You
+can modify the initial configuration of the container on the command
+line. For instance, to create a container that has
+<span class="command"><strong>sshd</strong></span> running, with the given public key for
+<code class="literal">root</code>:
+
+</p><pre class="screen">
+# nixos-container create foo --config '
+  services.openssh.enable = true;
+  users.extraUsers.root.openssh.authorizedKeys.keys = ["ssh-dss AAAAB3N…"];
+'
+</pre><p>
+
+</p><p>Creating a container does not start it. To start the container,
+run:
+
+</p><pre class="screen">
+# nixos-container start foo
+</pre><p>
+
+This command will return as soon as the container has booted and has
+reached <code class="literal">multi-user.target</code>. On the host, the
+container runs within a systemd unit called
+<code class="literal">container@<em class="replaceable"><code>container-name</code></em>.service</code>.
+Thus, if something went wrong, you can get status info using
+<span class="command"><strong>systemctl</strong></span>:
+
+</p><pre class="screen">
+# systemctl status container@foo
+</pre><p>
+
+</p><p>If the container has started successfully, you can log in as
+root using the <span class="command"><strong>root-login</strong></span> operation:
+
+</p><pre class="screen">
+# nixos-container root-login foo
+[root@foo:~]#
+</pre><p>
+
+Note that only root on the host can do this (since there is no
+authentication).  You can also get a regular login prompt using the
+<span class="command"><strong>login</strong></span> operation, which is available to all users on
+the host:
+
+</p><pre class="screen">
+# nixos-container login foo
+foo login: alice
+Password: ***
+</pre><p>
+
+With <span class="command"><strong>nixos-container run</strong></span>, you can execute arbitrary
+commands in the container:
+
+</p><pre class="screen">
+# nixos-container run foo -- uname -a
+Linux foo 3.4.82 #1-NixOS SMP Thu Mar 20 14:44:05 UTC 2014 x86_64 GNU/Linux
+</pre><p>
+
+</p><p>There are several ways to change the configuration of the
+container. First, on the host, you can edit
+<code class="literal">/var/lib/container/<em class="replaceable"><code>name</code></em>/etc/nixos/configuration.nix</code>,
+and run
+
+</p><pre class="screen">
+# nixos-container update foo
+</pre><p>
+
+This will build and activate the new configuration. You can also
+specify a new configuration on the command line:
+
+</p><pre class="screen">
+# nixos-container update foo --config '
+  services.httpd.enable = true;
+  services.httpd.adminAddr = "foo@example.org";
+  networking.firewall.allowedTCPPorts = [ 80 ];
+'
+
+# curl http://$(nixos-container show-ip foo)/
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN"&gt;…
+</pre><p>
+
+However, note that this will overwrite the container’s
+<code class="filename">/etc/nixos/configuration.nix</code>.</p><p>Alternatively, you can change the configuration from within the
+container itself by running <span class="command"><strong>nixos-rebuild switch</strong></span>
+inside the container. Note that the container by default does not have
+a copy of the NixOS channel, so you should run <span class="command"><strong>nix-channel
+--update</strong></span> first.</p><p>Containers can be stopped and started using
+<code class="literal">nixos-container stop</code> and <code class="literal">nixos-container
+start</code>, respectively, or by using
+<span class="command"><strong>systemctl</strong></span> on the container’s service unit. To
+destroy a container, including its file system, do
+
+</p><pre class="screen">
+# nixos-container destroy foo
+</pre><p>
+
+</p></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-nix-gc.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-running.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-declarative-containers.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 18. Cleaning the Nix Store </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Declarative Container Specification</td></tr></table></div></body></html>

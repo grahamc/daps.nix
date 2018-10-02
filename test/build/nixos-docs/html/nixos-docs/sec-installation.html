@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Chapter 2. Installing NixOS</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-installation.html" title="Part I. Installation" /><link rel="prev" href="sec-obtaining.html" title="Chapter 1. Obtaining NixOS" /><link rel="next" href="sec-booting-from-usb.html" title="Booting from a USB Drive" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 2. Installing NixOS</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-obtaining.html">Prev</a> </td><th width="60%" align="center">Part I. Installation</th><td width="20%" align="right"> <a accesskey="n" href="sec-booting-from-usb.html">Next</a></td></tr></table><hr /></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a id="sec-installation"></a>Chapter 2. Installing NixOS</h2></div></div></div><div class="toc"><p><strong>Table of Contents</strong></p><dl class="toc"><dt><span class="section"><a href="sec-installation.html#sec-uefi-installation">UEFI Installation</a></span></dt><dt><span class="section"><a href="sec-booting-from-usb.html">Booting from a USB Drive</a></span></dt><dt><span class="section"><a href="sec-booting-from-pxe.html">Booting from the <span class="quote">“<span class="quote">netboot</span>”</span> media (PXE)</a></span></dt><dt><span class="section"><a href="sec-instaling-virtualbox-guest.html">Installing in a Virtualbox guest</a></span></dt></dl></div><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Boot from the CD.</p></li><li class="listitem"><p>The CD contains a basic NixOS installation.  (It
+  also contains Memtest86+, useful if you want to test new hardware).
+  When it’s finished booting, it should have detected most of your
+  hardware.</p></li><li class="listitem"><p>The NixOS manual is available on virtual console 8
+  (press Alt+F8 to access).</p></li><li class="listitem"><p>You get logged in as <code class="literal">root</code>
+  (with empty password).</p></li><li class="listitem"><p>If you downloaded the graphical ISO image, you can
+  run <span class="command"><strong>systemctl start display-manager</strong></span> to start KDE. If you
+  want to continue on the terminal, you can use
+  <span class="command"><strong>loadkeys</strong></span> to switch to your preferred keyboard layout.
+  (We even provide neo2 via <span class="command"><strong>loadkeys de neo</strong></span>!)</p></li><li class="listitem"><p>The boot process should have brought up networking (check
+  <span class="command"><strong>ip a</strong></span>).  Networking is necessary for the
+  installer, since it will download lots of stuff (such as source
+  tarballs or Nixpkgs channel binaries).  It’s best if you have a DHCP
+  server on your network. Otherwise configure networking manually
+  using <span class="command"><strong>ifconfig</strong></span>.</p><p>To manually configure the network on the graphical installer,
+  first disable network-manager with
+  <span class="command"><strong>systemctl stop network-manager</strong></span>.</p></li><li class="listitem"><p>If you would like to continue the installation from a different
+  machine you need to activate the SSH daemon via <code class="literal">systemctl start sshd</code>.
+  In order to be able to login you also need to set a password for
+  <code class="literal">root</code> using <code class="literal">passwd</code>.</p></li><li class="listitem"><p>The NixOS installer doesn’t do any partitioning or
+  formatting yet, so you need to do that yourself.  Use the following
+  commands:
+
+  </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>For partitioning:
+    <span class="command"><strong>fdisk</strong></span>.</p></li><li class="listitem"><p>For initialising Ext4 partitions:
+    <span class="command"><strong>mkfs.ext4</strong></span>.  It is recommended that you assign a
+    unique symbolic label to the file system using the option
+    <code class="option">-L <em class="replaceable"><code>label</code></em></code>, since this
+    makes the file system configuration independent from device
+    changes.  For example:
+
+</p><pre class="screen">
+# mkfs.ext4 -L nixos /dev/sda1</pre><p>
+
+    </p></li><li class="listitem"><p>For creating swap partitions:
+    <span class="command"><strong>mkswap</strong></span>.  Again it’s recommended to assign a
+    label to the swap partition: <code class="option">-L
+    <em class="replaceable"><code>label</code></em></code>.</p></li><li class="listitem"><p>For creating LVM volumes, the LVM commands, e.g.,
+
+</p><pre class="screen">
+# pvcreate /dev/sda1 /dev/sdb1
+# vgcreate MyVolGroup /dev/sda1 /dev/sdb1
+# lvcreate --size 2G --name bigdisk MyVolGroup
+# lvcreate --size 1G --name smalldisk MyVolGroup</pre><p>
+
+    </p></li><li class="listitem"><p>For creating software RAID devices, use
+    <span class="command"><strong>mdadm</strong></span>.</p></li></ul></div><p>
+
+  </p></li><li class="listitem"><p>Mount the target file system on which NixOS should
+  be installed on <code class="filename">/mnt</code>, e.g.
+
+</p><pre class="screen">
+# mount /dev/disk/by-label/nixos /mnt
+</pre><p>
+
+  </p></li><li class="listitem"><p>If your machine has a limited amount of memory, you
+  may want to activate swap devices now (<span class="command"><strong>swapon
+  <em class="replaceable"><code>device</code></em></strong></span>).  The installer (or
+  rather, the build actions that it may spawn) may need quite a bit of
+  RAM, depending on your configuration.</p></li><li class="listitem"><p>You now need to create a file
+    <code class="filename">/mnt/etc/nixos/configuration.nix</code> that
+    specifies the intended configuration of the system.  This is
+    because NixOS has a <span class="emphasis"><em>declarative</em></span> configuration
+    model: you create or edit a description of the desired
+    configuration of your system, and then NixOS takes care of making
+    it happen.  The syntax of the NixOS configuration file is
+    described in <a class="xref" href="sec-configuration-syntax.html" title="Chapter 5. Configuration Syntax">Chapter 5, <em>Configuration Syntax</em></a>, while a
+    list of available configuration options appears in <a class="xref" href="ch-options.html" title="Appendix A. Configuration Options">Appendix A, <em>Configuration Options</em></a>.  A minimal example is shown in <a class="xref" href="sec-installation.html#ex-config" title="Example 2.2. NixOS Configuration">Example 2.2, “NixOS Configuration”</a>.</p><p>The command <span class="command"><strong>nixos-generate-config</strong></span> can
+    generate an initial configuration file for you:
+
+</p><pre class="screen">
+# nixos-generate-config --root /mnt</pre><p>
+
+    You should then edit
+    <code class="filename">/mnt/etc/nixos/configuration.nix</code> to suit your
+    needs:
+
+</p><pre class="screen">
+# nano /mnt/etc/nixos/configuration.nix
+</pre><p>
+
+    If you’re using the graphical ISO image, other editors may be
+    available (such as <span class="command"><strong>vim</strong></span>). If you have network
+    access, you can also install other editors — for instance, you can
+    install Emacs by running <code class="literal">nix-env -i
+    emacs</code>.</p><p>You <span class="emphasis"><em>must</em></span> set the option
+    <code class="option">boot.loader.grub.device</code> to specify on which disk
+    the GRUB boot loader is to be installed.  Without it, NixOS cannot
+    boot.</p><p>Another critical option is <code class="option">fileSystems</code>,
+    specifying the file systems that need to be mounted by NixOS.
+    However, you typically don’t need to set it yourself, because
+    <span class="command"><strong>nixos-generate-config</strong></span> sets it automatically in
+    <code class="filename">/mnt/etc/nixos/hardware-configuration.nix</code>
+    from your currently mounted file systems.  (The configuration file
+    <code class="filename">hardware-configuration.nix</code> is included from
+    <code class="filename">configuration.nix</code> and will be overwritten by
+    future invocations of <span class="command"><strong>nixos-generate-config</strong></span>;
+    thus, you generally should not modify it.)</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Depending on your hardware configuration or type of
+    file system, you may need to set the option
+    <code class="option">boot.initrd.kernelModules</code> to include the kernel
+    modules that are necessary for mounting the root file system,
+    otherwise the installed system will not be able to boot.  (If this
+    happens, boot from the CD again, mount the target file system on
+    <code class="filename">/mnt</code>, fix
+    <code class="filename">/mnt/etc/nixos/configuration.nix</code> and rerun
+    <code class="filename">nixos-install</code>.)  In most cases,
+    <span class="command"><strong>nixos-generate-config</strong></span> will figure out the
+    required modules.</p></div></li><li class="listitem"><p>Do the installation:
+
+</p><pre class="screen">
+# nixos-install</pre><p>
+
+    Cross fingers.  If this fails due to a temporary problem (such as
+    a network issue while downloading binaries from the NixOS binary
+    cache), you can just re-run <span class="command"><strong>nixos-install</strong></span>.
+    Otherwise, fix your <code class="filename">configuration.nix</code> and
+    then re-run <span class="command"><strong>nixos-install</strong></span>.</p><p>As the last step, <span class="command"><strong>nixos-install</strong></span> will ask
+    you to set the password for the <code class="literal">root</code> user, e.g.
+
+</p><pre class="screen">
+setting root password...
+Enter new UNIX password: ***
+Retype new UNIX password: ***
+</pre><p>
+
+    </p></li><li class="listitem"><p>If everything went well:
+
+</p><pre class="screen">
+# reboot</pre><p>
+
+  </p></li><li class="listitem"><p>You should now be able to boot into the installed NixOS. The
+    GRUB boot menu shows a list of <span class="emphasis"><em>available
+    configurations</em></span> (initially just one). Every time you
+    change the NixOS configuration (see <a class="link" href="sec-changing-config.html" title="Chapter 3. Changing the Configuration">Changing Configuration</a> ), a
+    new item is added to the menu. This allows you to easily roll back
+    to a previous configuration if something goes wrong.</p><p>You should log in and change the <code class="literal">root</code>
+    password with <span class="command"><strong>passwd</strong></span>.</p><p>You’ll probably want to create some user accounts as well,
+    which can be done with <span class="command"><strong>useradd</strong></span>:
+
+</p><pre class="screen">
+$ useradd -c 'Eelco Dolstra' -m eelco
+$ passwd eelco</pre><p>
+
+    </p><p>You may also want to install some software.  For instance,
+
+</p><pre class="screen">
+$ nix-env -qa \*</pre><p>
+
+    shows what packages are available, and
+
+</p><pre class="screen">
+$ nix-env -i w3m</pre><p>
+
+    install the <code class="literal">w3m</code> browser.</p></li></ol></div><p>To summarise, <a class="xref" href="sec-installation.html#ex-install-sequence" title="Example 2.1. Commands for Installing NixOS on /dev/sda">Example 2.1, “Commands for Installing NixOS on <code class="filename">/dev/sda</code>”</a> shows a
+typical sequence of commands for installing NixOS on an empty hard
+drive (here <code class="filename">/dev/sda</code>).  <a class="xref" href="sec-installation.html#ex-config" title="Example 2.2. NixOS Configuration">Example 2.2, “NixOS Configuration”</a> shows a corresponding configuration Nix expression.</p><div class="example"><a id="ex-install-sequence"></a><p class="title"><strong>Example 2.1. Commands for Installing NixOS on <code class="filename">/dev/sda</code></strong></p><div class="example-contents"><pre class="screen">
+# fdisk /dev/sda # <em class="lineannotation"><span class="lineannotation">(or whatever device you want to install on)</span></em>
+# mkfs.ext4 -L nixos /dev/sda1
+# mkswap -L swap /dev/sda2
+# swapon /dev/sda2
+# mount /dev/disk/by-label/nixos /mnt
+# nixos-generate-config --root /mnt
+# nano /mnt/etc/nixos/configuration.nix
+# nixos-install
+# reboot</pre></div></div><br class="example-break" /><div class="example"><a id="ex-config"></a><p class="title"><strong>Example 2.2. NixOS Configuration</strong></p><div class="example-contents"><pre class="screen">
+{ config, pkgs, ... }:
+
+{
+  imports =
+    [ # Include the results of the hardware scan.
+      ./hardware-configuration.nix
+    ];
+
+  boot.loader.grub.device = "/dev/sda";
+
+  # Note: setting fileSystems is generally not
+  # necessary, since nixos-generate-config figures them out
+  # automatically in hardware-configuration.nix.
+  #fileSystems."/".device = "/dev/disk/by-label/nixos";
+
+  # Enable the OpenSSH server.
+  services.sshd.enable = true;
+}</pre></div></div><br class="example-break" /><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-uefi-installation"></a>UEFI Installation</h2></div></div></div><p>NixOS can also be installed on UEFI systems.  The procedure
+is by and large the same as a BIOS installation, with the following
+changes:
+
+</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>You should boot the live CD in UEFI mode (consult your
+    specific hardware's documentation for instructions). You may find
+    the <a class="link" href="installation-http://www.rodsbooks.com/refind" target="_top">rEFInd
+    boot manager</a> useful.</p></li><li class="listitem"><p>Instead of <span class="command"><strong>fdisk</strong></span>, you should use
+    <span class="command"><strong>gdisk</strong></span> to partition your disks. You will need to
+    have a separate partition for <code class="filename">/boot</code> with
+    partition code EF00, and it should be formatted as a
+    <code class="literal">vfat</code> filesystem.</p></li><li class="listitem"><p>Instead of <code class="option">boot.loader.grub.device</code>,
+    you must set <code class="option">boot.loader.systemd-boot.enable</code> to
+    <code class="literal">true</code>. <span class="command"><strong>nixos-generate-config</strong></span>
+    should do this automatically for new configurations when booted in
+    UEFI mode.</p></li><li class="listitem"><p>After having mounted your installation partition to
+    <code class="code">/mnt</code>, you must mount the <code class="code">boot</code> partition
+    to <code class="code">/mnt/boot</code>.</p></li><li class="listitem"><p>You may want to look at the options starting with
+    <code class="option">boot.loader.efi</code> and <code class="option">boot.loader.systemd-boot</code>
+    as well.</p></li></ul></div><p>
+</p></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-obtaining.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-installation.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-booting-from-usb.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 1. Obtaining NixOS </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Booting from a USB Drive</td></tr></table></div></body></html>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Chapter 11. Networking</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-configuration.html" title="Part II. Configuration" /><link rel="prev" href="sec-xfce.html" title="Chapter 10. Xfce Desktop Environment" /><link rel="next" href="sec-ssh.html" title="Secure Shell Access" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 11. Networking</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-xfce.html">Prev</a> </td><th width="60%" align="center">Part II. Configuration</th><td width="20%" align="right"> <a accesskey="n" href="sec-ssh.html">Next</a></td></tr></table><hr /></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a id="sec-networking"></a>Chapter 11. Networking</h2></div></div></div><div class="toc"><p><strong>Table of Contents</strong></p><dl class="toc"><dt><span class="section"><a href="sec-networking.html#sec-networkmanager">NetworkManager</a></span></dt><dt><span class="section"><a href="sec-ssh.html">Secure Shell Access</a></span></dt><dt><span class="section"><a href="sec-ipv4.html">IPv4 Configuration</a></span></dt><dt><span class="section"><a href="sec-ipv6.html">IPv6 Configuration</a></span></dt><dt><span class="section"><a href="sec-firewall.html">Firewall</a></span></dt><dt><span class="section"><a href="sec-wireless.html">Wireless Networks</a></span></dt><dt><span class="section"><a href="ad-hoc-network-config.html">Ad-Hoc Configuration</a></span></dt></dl></div><p>This section describes how to configure networking components on
+your NixOS machine.</p><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-networkmanager"></a>NetworkManager</h2></div></div></div><p>To facilitate network configuration, some desktop environments
+use NetworkManager. You can enable NetworkManager by setting:
+
+</p><pre class="programlisting">
+networking.networkmanager.enable = true;
+</pre><p>
+
+some desktop managers (e.g., GNOME) enable NetworkManager
+automatically for you.</p><p>All users that should have permission to change network settings must
+belong to the <code class="code">networkmanager</code> group:
+
+</p><pre class="programlisting">
+users.extraUsers.youruser.extraGroups = [ "networkmanager" ];
+</pre><p>
+</p><p>NetworkManager is controlled using either <span class="command"><strong>nmcli</strong></span> or
+<span class="command"><strong>nmtui</strong></span> (curses-based terminal user interface). See their
+manual pages for details on their usage. Some desktop environments (GNOME, KDE)
+have their own configuration tools for NetworkManager. On XFCE, there is no
+configuration tool for NetworkManager by default: by adding
+<code class="code">networkmanagerapplet</code> to the list of system packages, the graphical
+applet will be installed and will launch automatically when XFCE is starting
+(and will show in the status tray).</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p><code class="code">networking.networkmanager</code> and
+<code class="code">networking.wireless</code> (WPA Supplicant) cannot be enabled at the same
+time: you can still connect to the wireless networks using
+NetworkManager.</p></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-xfce.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-configuration.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-ssh.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 10. Xfce Desktop Environment </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Secure Shell Access</td></tr></table></div></body></html>

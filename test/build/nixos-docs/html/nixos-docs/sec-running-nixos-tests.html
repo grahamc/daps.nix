@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Running Tests interactively</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="sec-nixos-tests.html" title="Chapter 26. NixOS Tests" /><link rel="prev" href="sec-running-nixos-tests-interactively.html" title="Running Tests" /><link rel="next" href="ch-testing-installer.html" title="Chapter 27. Testing the Installer" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Running Tests interactively</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-running-nixos-tests-interactively.html">Prev</a> </td><th width="60%" align="center">Chapter 26. NixOS Tests</th><td width="20%" align="right"> <a accesskey="n" href="ch-testing-installer.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-running-nixos-tests"></a>Running Tests interactively</h2></div></div></div><p>The test itself can be run interactively.  This is
+particularly useful when developing or debugging a test:
+
+</p><pre class="screen">
+$ nix-build nixos/tests/login.nix -A driver
+$ ./result/bin/nixos-test-driver
+starting VDE switch for network 1
+&gt;
+</pre><p>
+
+You can then take any Perl statement, e.g.
+
+</p><pre class="screen">
+&gt; startAll
+&gt; testScript
+&gt; $machine-&gt;succeed("touch /tmp/foo")
+</pre><p>
+
+The function <span class="command"><strong>testScript</strong></span> executes the entire test
+script and drops you back into the test driver command line upon its
+completion.  This allows you to inspect the state of the VMs after the
+test (e.g. to debug the test script).</p><p>To just start and experiment with the VMs, run:
+
+</p><pre class="screen">
+$ nix-build nixos/tests/login.nix -A driver
+$ ./result/bin/nixos-run-vms
+</pre><p>
+
+The script <span class="command"><strong>nixos-run-vms</strong></span> starts the virtual
+machines defined by test.  The root file system of the VMs is created
+on the fly and kept across VM restarts in
+<code class="filename">./</code><code class="varname">hostname</code><code class="filename">.qcow2</code>.</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-running-nixos-tests-interactively.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sec-nixos-tests.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ch-testing-installer.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Running Tests </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 27. Testing the Installer</td></tr></table></div></body></html>

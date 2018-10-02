@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Chapter 9. X Window System</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-configuration.html" title="Part II. Configuration" /><link rel="prev" href="ch-file-systems.html" title="Chapter 8. File Systems" /><link rel="next" href="sec-xfce.html" title="Chapter 10. Xfce Desktop Environment" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 9. X Window System</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch-file-systems.html">Prev</a> </td><th width="60%" align="center">Part II. Configuration</th><td width="20%" align="right"> <a accesskey="n" href="sec-xfce.html">Next</a></td></tr></table><hr /></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a id="sec-x11"></a>Chapter 9. X Window System</h2></div></div></div><p>The X Window System (X11) provides the basis of NixOS’ graphical
+user interface.  It can be enabled as follows:
+</p><pre class="programlisting">
+services.xserver.enable = true;
+</pre><p>
+The X server will automatically detect and use the appropriate video
+driver from a set of X.org drivers (such as <code class="literal">vesa</code>
+and <code class="literal">intel</code>).  You can also specify a driver
+manually, e.g.
+</p><pre class="programlisting">
+services.xserver.videoDrivers = [ "r128" ];
+</pre><p>
+to enable X.org’s <code class="literal">xf86-video-r128</code> driver.</p><p>You also need to enable at least one desktop or window manager.
+Otherwise, you can only log into a plain undecorated
+<span class="command"><strong>xterm</strong></span> window.  Thus you should pick one or more of
+the following lines:
+</p><pre class="programlisting">
+services.xserver.desktopManager.plasma5.enable = true;
+services.xserver.desktopManager.xfce.enable = true;
+services.xserver.desktopManager.gnome3.enable = true;
+services.xserver.windowManager.xmonad.enable = true;
+services.xserver.windowManager.twm.enable = true;
+services.xserver.windowManager.icewm.enable = true;
+services.xserver.windowManager.i3.enable = true;
+</pre><p>
+</p><p>NixOS’s default <span class="emphasis"><em>display manager</em></span> (the
+program that provides a graphical login prompt and manages the X
+server) is SLiM. You can select an alternative one by picking one
+of the following lines:
+</p><pre class="programlisting">
+services.xserver.displayManager.sddm.enable = true;
+services.xserver.displayManager.lightdm.enable = true;
+</pre><p>
+</p><p>You can set the keyboard layout (and optionally the layout variant):
+</p><pre class="programlisting">
+services.xserver.layout = "de";
+services.xserver.xkbVariant = "neo";
+</pre><p>
+</p><p>The X server is started automatically at boot time.  If you
+don’t want this to happen, you can set:
+</p><pre class="programlisting">
+services.xserver.autorun = false;
+</pre><p>
+The X server can then be started manually:
+</p><pre class="screen">
+# systemctl start display-manager.service
+</pre><p>
+</p><div class="simplesect"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idm140404929969120"></a>NVIDIA Graphics Cards</h2></div></div></div><p>NVIDIA provides a proprietary driver for its graphics cards that
+has better 3D performance than the X.org drivers.  It is not enabled
+by default because it’s not free software.  You can enable it as follows:
+</p><pre class="programlisting">
+services.xserver.videoDrivers = [ "nvidia" ];
+</pre><p>
+Or if you have an older card, you may have to use one of the legacy drivers:
+</p><pre class="programlisting">
+services.xserver.videoDrivers = [ "nvidiaLegacy340" ];
+services.xserver.videoDrivers = [ "nvidiaLegacy304" ];
+services.xserver.videoDrivers = [ "nvidiaLegacy173" ];
+</pre><p>
+You may need to reboot after enabling this driver to prevent a clash
+with other kernel modules.</p><p>On 64-bit systems, if you want full acceleration for 32-bit
+programs such as Wine, you should also set the following:
+</p><pre class="programlisting">
+hardware.opengl.driSupport32Bit = true;
+</pre><p>
+</p></div><div class="simplesect"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idm140404928945104"></a>AMD Graphics Cards</h2></div></div></div><p>AMD provides a proprietary driver for its graphics cards that
+has better 3D performance than the X.org drivers.  It is not enabled
+by default because it’s not free software.  You can enable it as follows:
+</p><pre class="programlisting">
+services.xserver.videoDrivers = [ "ati_unfree" ];
+</pre><p>
+You will need to reboot after enabling this driver to prevent a clash
+with other kernel modules.</p><p>On 64-bit systems, if you want full acceleration for 32-bit
+programs such as Wine, you should also set the following:
+</p><pre class="programlisting">
+hardware.opengl.driSupport32Bit = true;
+</pre><p>
+</p></div><div class="simplesect"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idm140404929471008"></a>Touchpads</h2></div></div></div><p>Support for Synaptics touchpads (found in many laptops such as
+the Dell Latitude series) can be enabled as follows:
+</p><pre class="programlisting">
+services.xserver.synaptics.enable = true;
+</pre><p>
+The driver has many options (see <a class="xref" href="ch-options.html" title="Appendix A. Configuration Options">Appendix A, <em>Configuration Options</em></a>).  For
+instance, the following enables two-finger scrolling:
+</p><pre class="programlisting">
+services.xserver.synaptics.twoFingerScroll = true;
+</pre><p>
+</p></div><div class="simplesect"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idm140404929696384"></a>GTK/Qt themes</h2></div></div></div><p>GTK themes can be installed either to user profile or system-wide (via
+<code class="literal">system.environmentPackages</code>). To make Qt 5 applications look similar
+to GTK2 ones, you can install <code class="literal">qt5.qtbase.gtk</code> package into your
+system environment. It should work for all Qt 5 library versions.
+</p></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch-file-systems.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-configuration.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-xfce.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 8. File Systems </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 10. Xfce Desktop Environment</td></tr></table></div></body></html>

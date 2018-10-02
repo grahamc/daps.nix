@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Editing DocBook XML</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="sec-writing-documentation.html" title="Chapter 24. Writing NixOS Documentation" /><link rel="prev" href="sec-writing-documentation.html" title="Chapter 24. Writing NixOS Documentation" /><link rel="next" href="ch24s03.html" title="Creating a Topic" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Editing DocBook XML</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-writing-documentation.html">Prev</a> </td><th width="60%" align="center">Chapter 24. Writing NixOS Documentation</th><td width="20%" align="right"> <a accesskey="n" href="ch24s03.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idm140404926878208"></a>Editing DocBook XML</h2></div></div></div><p>
+  For general information on how to write in DocBook, see
+  <a class="link" href="development-http://www.docbook.org/tdg5/en/html/docbook.html" target="_top">
+    DocBook 5: The Definitive Guide</a>.
+</p><p>
+  Emacs nXML Mode is very helpful for editing DocBook XML because it
+  validates the document as you write, and precisely locates
+  errors. To use it, see <a class="xref" href="">???</a>.
+</p><p>
+  <a class="link" href="development-http://pandoc.org" target="_top">Pandoc</a> can generate
+  DocBook XML from a multitude of formats, which makes a good starting
+  point.
+
+  </p><div class="example"><a id="ex-pandoc-xml-conv"></a><p class="title"><strong>Example 24.1. Pandoc invocation to convert GitHub-Flavoured MarkDown to DocBook 5 XML</strong></p><div class="example-contents"><pre class="screen">pandoc -f markdown_github -t docbook5 docs.md -o my-section.md</pre></div></div><p><br class="example-break" />
+
+  Pandoc can also quickly convert a single
+  <code class="filename">section.xml</code> to HTML, which is helpful when
+  drafting.
+</p><p>
+  Sometimes writing valid DocBook is simply too difficult. In this
+  case, submit your documentation updates in a <a class="link" href="development-https://github.com/NixOS/nixpkgs/issues/new" target="_top">GitHub
+  Issue</a> and someone will handle the conversion to XML for you.
+</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-writing-documentation.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sec-writing-documentation.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ch24s03.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 24. Writing NixOS Documentation </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Creating a Topic</td></tr></table></div></body></html>

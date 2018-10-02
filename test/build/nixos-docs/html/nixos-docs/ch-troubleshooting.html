@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Chapter 20. Troubleshooting</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-running.html" title="Part III. Administration" /><link rel="prev" href="sec-container-networking.html" title="Container Networking" /><link rel="next" href="sec-maintenance-mode.html" title="Maintenance Mode" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 20. Troubleshooting</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-container-networking.html">Prev</a> </td><th width="60%" align="center">Part III. Administration</th><td width="20%" align="right"> <a accesskey="n" href="sec-maintenance-mode.html">Next</a></td></tr></table><hr /></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a id="ch-troubleshooting"></a>Chapter 20. Troubleshooting</h2></div></div></div><div class="toc"><p><strong>Table of Contents</strong></p><dl class="toc"><dt><span class="section"><a href="ch-troubleshooting.html#sec-boot-problems">Boot Problems</a></span></dt><dt><span class="section"><a href="sec-maintenance-mode.html">Maintenance Mode</a></span></dt><dt><span class="section"><a href="sec-rollback.html">Rolling Back Configuration Changes</a></span></dt><dt><span class="section"><a href="sec-nix-store-corruption.html">Nix Store Corruption</a></span></dt><dt><span class="section"><a href="sec-nix-network-issues.html">Network Problems</a></span></dt></dl></div><p>This chapter describes solutions to common problems you might
+encounter when you manage your NixOS system.</p><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-boot-problems"></a>Boot Problems</h2></div></div></div><p>If NixOS fails to boot, there are a number of kernel command
+line parameters that may help you to identify or fix the issue.  You
+can add these parameters in the GRUB boot menu by pressing “e” to
+modify the selected boot entry and editing the line starting with
+<code class="literal">linux</code>.  The following are some useful kernel command
+line parameters that are recognised by the NixOS boot scripts or by
+systemd:
+
+</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="literal">boot.shell_on_fail</code></span></dt><dd><p>Start a root shell if something goes wrong in
+    stage 1 of the boot process (the initial ramdisk).  This is
+    disabled by default because there is no authentication for the
+    root shell.</p></dd><dt><span class="term"><code class="literal">boot.debug1</code></span></dt><dd><p>Start an interactive shell in stage 1 before
+    anything useful has been done.  That is, no modules have been
+    loaded and no file systems have been mounted, except for
+    <code class="filename">/proc</code> and
+    <code class="filename">/sys</code>.</p></dd><dt><span class="term"><code class="literal">boot.trace</code></span></dt><dd><p>Print every shell command executed by the stage 1
+    and 2 boot scripts.</p></dd><dt><span class="term"><code class="literal">single</code></span></dt><dd><p>Boot into rescue mode (a.k.a. single user mode).
+    This will cause systemd to start nothing but the unit
+    <code class="literal">rescue.target</code>, which runs
+    <span class="command"><strong>sulogin</strong></span> to prompt for the root password and
+    start a root login shell.  Exiting the shell causes the system to
+    continue with the normal boot process.</p></dd><dt><span class="term"><code class="literal">systemd.log_level=debug systemd.log_target=console</code></span></dt><dd><p>Make systemd very verbose and send log messages to
+    the console instead of the journal.</p></dd></dl></div><p>
+
+For more parameters recognised by systemd, see
+<span class="citerefentry"><span class="refentrytitle">systemd</span>(1)</span>.</p><p>If no login prompts or X11 login screens appear (e.g. due to
+hanging dependencies), you can press Alt+ArrowUp.  If you’re lucky,
+this will start rescue mode (described above).  (Also note that since
+most units have a 90-second timeout before systemd gives up on them,
+the <span class="command"><strong>agetty</strong></span> login prompts should appear eventually
+unless something is very wrong.)</p></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-container-networking.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-running.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-maintenance-mode.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Container Networking </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Maintenance Mode</td></tr></table></div></body></html>

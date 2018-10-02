@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Network Problems</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-troubleshooting.html" title="Chapter 20. Troubleshooting" /><link rel="prev" href="sec-nix-store-corruption.html" title="Nix Store Corruption" /><link rel="next" href="ch-development.html" title="Part IV. Development" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Network Problems</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-nix-store-corruption.html">Prev</a> </td><th width="60%" align="center">Chapter 20. Troubleshooting</th><td width="20%" align="right"> <a accesskey="n" href="ch-development.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-nix-network-issues"></a>Network Problems</h2></div></div></div><p>Nix uses a so-called <span class="emphasis"><em>binary cache</em></span> to
+optimise building a package from source into downloading it as a
+pre-built binary.  That is, whenever a command like
+<span class="command"><strong>nixos-rebuild</strong></span> needs a path in the Nix store, Nix
+will try to download that path from the Internet rather than build it
+from source.  The default binary cache is
+<code class="uri">https://cache.nixos.org/</code>.  If this cache is unreachable,
+Nix operations may take a long time due to HTTP connection timeouts.
+You can disable the use of the binary cache by adding <code class="option">--option
+use-binary-caches false</code>, e.g.
+
+</p><pre class="screen">
+# nixos-rebuild switch --option use-binary-caches false
+</pre><p>
+
+If you have an alternative binary cache at your disposal, you can use
+it instead:
+
+</p><pre class="screen">
+# nixos-rebuild switch --option binary-caches http://my-cache.example.org/
+</pre><p>
+
+</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-nix-store-corruption.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-troubleshooting.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ch-development.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Nix Store Corruption </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Part IV. Development</td></tr></table></div></body></html>

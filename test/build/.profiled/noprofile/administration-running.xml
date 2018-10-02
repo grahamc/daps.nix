@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<part xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xml:base="administration-running.xml" version="5.0" xml:id="ch-running">
+
+<title>Administration</title>
+
+<partintro>
+<para>This chapter describes various aspects of managing a running
+NixOS system, such as how to use the <command>systemd</command>
+service manager.</para>
+</partintro>
+
+<xi:include href="administration-service-mgmt.xml"/>
+<xi:include href="administration-rebooting.xml"/>
+<xi:include href="administration-user-sessions.xml"/>
+<xi:include href="administration-control-groups.xml"/>
+<xi:include href="administration-logging.xml"/>
+<xi:include href="administration-cleaning-store.xml"/>
+<xi:include href="administration-containers.xml"/>
+<xi:include href="administration-troubleshooting.xml"/>
+
+</part>

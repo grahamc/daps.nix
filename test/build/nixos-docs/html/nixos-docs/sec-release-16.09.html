@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Release 16.09 (“Flounder”, 2016/09/30)</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-release-notes.html" title="Appendix B. Release Notes" /><link rel="prev" href="sec-release-17.03.html" title="Release 17.03 (“Gorilla”, 2017/03/31)" /><link rel="next" href="sec-release-16.03.html" title="Release 16.03 (“Emu”, 2016/03/31)" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Release 16.09 (“Flounder”, 2016/09/30)</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-release-17.03.html">Prev</a> </td><th width="60%" align="center">Appendix B. Release Notes</th><td width="20%" align="right"> <a accesskey="n" href="sec-release-16.03.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-release-16.09"></a>Release 16.09 (“Flounder”, 2016/09/30)</h2></div></div></div><p>In addition to numerous new and upgraded packages, this release
+has the following highlights: </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Many NixOS configurations and Nix packages now use
+    significantly less disk space, thanks to the <a class="link" href="release-notes-https://github.com/NixOS/nixpkgs/issues/7117" target="_top">extensive
+    work on closure size reduction</a>. For example, the closure
+    size of a minimal NixOS container went down from ~424 MiB in 16.03
+    to ~212 MiB in 16.09, while the closure size of Firefox went from
+    ~651 MiB to ~259 MiB.</p></li><li class="listitem"><p>To improve security, packages are now <a class="link" href="release-notes-https://github.com/NixOS/nixpkgs/pull/12895" target="_top">built
+    using various hardening features</a>. See the Nixpkgs manual
+    for more information.</p></li><li class="listitem"><p>Support for PXE netboot.  See <a class="xref" href="sec-booting-from-pxe.html" title="Booting from the “netboot” media (PXE)">the section called “Booting from the <span class="quote">“<span class="quote">netboot</span>”</span> media (PXE)”</a> for documentation.</p></li><li class="listitem"><p>X.org server 1.18. If you use the
+    <code class="literal">ati_unfree</code> driver, 1.17 is still used due to an
+    ABI incompatibility.</p></li><li class="listitem"><p>This release is based on Glibc 2.24, GCC 5.4.0 and systemd
+    231. The default Linux kernel remains 4.4.</p></li></ul></div><p>The following new services were added since the last release:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">(this will get automatically generated at release time)</code></p></li></ul></div><p>When upgrading from a previous release, please be aware of the
+following incompatible changes:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>A large number of packages have been converted to use the multiple outputs feature
+      of Nix to greatly reduce the amount of required disk space, as
+      mentioned above. This may require changes
+      to any custom packages to make them build again; see the relevant chapter in the
+      Nixpkgs manual for more information. (Additional caveat to packagers: some packaging conventions
+      related to multiple-output packages
+      <a class="link" href="release-notes-https://github.com/NixOS/nixpkgs/pull/14766" target="_top">were changed</a>
+      late (August 2016) in the release cycle and differ from the initial introduction of multiple outputs.)
+    </p></li><li class="listitem"><p>Previous versions of Nixpkgs had support for all versions of the LTS
+    Haskell package set. That support has been dropped. The previously provided
+    <code class="literal">haskell.packages.lts-x_y</code> package sets still exist in
+    name to aviod breaking user code, but these package sets don't actually
+    contain the versions mandated by the corresponding LTS release. Instead,
+    our package set it loosely based on the latest available LTS release, i.e.
+    LTS 7.x at the time of this writing. New releases of NixOS and Nixpkgs will
+    drop those old names entirely. <a class="link" href="release-notes-https://nixos.org/nix-dev/2016-June/020585.html" target="_top">The
+    motivation for this change</a> has been discussed at length on the
+    <code class="literal">nix-dev</code> mailing list and in <a class="link" href="release-notes-https://github.com/NixOS/nixpkgs/issues/14897" target="_top">Github issue
+    #14897</a>. Development strategies for Haskell hackers who want to rely
+    on Nix and NixOS have been described in <a class="link" href="release-notes-https://nixos.org/nix-dev/2016-June/020642.html" target="_top">another
+    nix-dev article</a>.</p></li><li class="listitem"><p>Shell aliases for systemd sub-commands
+    <a class="link" href="release-notes-https://github.com/NixOS/nixpkgs/pull/15598" target="_top">were dropped</a>:
+    <span class="command"><strong>start</strong></span>, <span class="command"><strong>stop</strong></span>,
+    <span class="command"><strong>restart</strong></span>, <span class="command"><strong>status</strong></span>.</p></li><li class="listitem"><p>Redis now binds to 127.0.0.1 only instead of listening to all network interfaces. This is the default
+    behavior of Redis 3.2</p></li><li class="listitem"><p>
+      <code class="literal">/var/empty</code> is now immutable. Activation script runs <span class="command"><strong>chattr +i</strong></span>
+      to forbid any modifications inside the folder. See <a class="link" href="release-notes-https://github.com/NixOS/nixpkgs/pull/18365" target="_top">
+      the pull request</a> for what bugs this caused.
+    </p></li><li class="listitem"><p>Gitlab's maintainance script
+    <span class="command"><strong>gitlab-runner</strong></span> was removed and split up into the
+    more clearer <span class="command"><strong>gitlab-run</strong></span> and
+    <span class="command"><strong>gitlab-rake</strong></span> scripts, because
+    <span class="command"><strong>gitlab-runner</strong></span> is a component of Gitlab
+    CI.</p></li><li class="listitem"><p><code class="literal">services.xserver.libinput.accelProfile</code> default
+    changed from <code class="literal">flat</code> to <code class="literal">adaptive</code>,
+    as per <a class="link" href="release-notes-https://wayland.freedesktop.org/libinput/doc/latest/group__config.html#gad63796972347f318b180e322e35cee79" target="_top">
+    official documentation</a>.</p></li><li class="listitem"><p><code class="literal">fonts.fontconfig.ultimate.rendering</code> was removed
+    because our presets were obsolete for some time. New presets are hardcoded
+    into FreeType; you can select a preset via <code class="literal">fonts.fontconfig.ultimate.preset</code>.
+    You can customize those presets via ordinary environment variables, using
+    <code class="literal">environment.variables</code>.</p></li><li class="listitem"><p>The <code class="literal">audit</code> service is no longer enabled by default.
+    Use <code class="literal">security.audit.enable = true</code> to explicitly enable it.</p></li><li class="listitem"><p>
+      <code class="literal">pkgs.linuxPackages.virtualbox</code> now contains only the
+      kernel modules instead of the VirtualBox user space binaries.
+      If you want to reference the user space binaries, you have to use the new
+      <code class="literal">pkgs.virtualbox</code> instead.
+    </p></li><li class="listitem"><p><code class="literal">goPackages</code> was replaced with separated Go
+    applications in appropriate <code class="literal">nixpkgs</code>
+    categories. Each Go package uses its own dependency set. There's
+    also a new <code class="literal">go2nix</code> tool introduced to generate a
+    Go package definition from its Go source automatically.</p></li><li class="listitem"><p><code class="literal">services.mongodb.extraConfig</code> configuration format
+    was changed to YAML.</p></li><li class="listitem"><p>
+      PHP has been upgraded to 7.0
+    </p></li></ul></div><p>Other notable improvements:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Revamped grsecurity/PaX support.  There is now only a single
+  general-purpose distribution kernel and the configuration interface has been
+  streamlined.  Desktop users should be able to simply set
+  </p><pre class="programlisting">security.grsecurity.enable = true</pre><p> to get
+  a reasonably secure system without having to sacrifice too much
+  functionality.
+  </p></li><li class="listitem"><p>Special filesystems, like <code class="literal">/proc</code>,
+  <code class="literal">/run</code> and others, now have the same mount options
+  as recommended by systemd and are unified across different places in
+  NixOS.  Mount options are updated during <span class="command"><strong>nixos-rebuild
+  switch</strong></span> if possible. One benefit from this is improved
+  security — most such filesystems are now mounted with
+  <code class="literal">noexec</code>, <code class="literal">nodev</code> and/or
+  <code class="literal">nosuid</code> options.</p></li><li class="listitem"><p>The reverse path filter was interfering with DHCPv4 server
+  operation in the past. An exception for DHCPv4 and a new option to log
+  packets that were dropped due to the reverse path filter was added
+  (<code class="literal">networking.firewall.logReversePathDrops</code>) for easier
+  debugging.</p></li><li class="listitem"><p>Containers configuration within
+  <code class="literal">containers.&lt;name&gt;.config</code> is <a class="link" href="release-notes-https://github.com/NixOS/nixpkgs/pull/17365" target="_top">now
+  properly typed and checked</a>. In particular, partial
+  configurations are merged correctly.</p></li><li class="listitem"><p>The directory container setuid wrapper programs,
+    <code class="filename">/var/setuid-wrappers</code>, <a class="link" href="release-notes-https://github.com/NixOS/nixpkgs/pull/18124" target="_top">is now
+    updated atomically to prevent failures if the switch to a new
+    configuration is interrupted.</a></p></li><li class="listitem"><p><code class="literal">services.xserver.startGnuPGAgent</code>
+      has been removed due to GnuPG 2.1.x bump. See <a class="link" href="release-notes-https://github.com/NixOS/nixpkgs/commit/5391882ebd781149e213e8817fba6ac3c503740c" target="_top">
+        how to achieve similar behavior</a>. You might need to
+      <code class="literal">pkill gpg-agent</code> after the upgrade
+      to prevent a stale agent being in the way.
+    </p></li><li class="listitem"><p>
+    <a class="link" href="release-notes-https://github.com/NixOS/nixpkgs/commit/e561edc322d275c3687fec431935095cfc717147" target="_top">
+    Declarative users could share the uid due to the bug in
+    the script handling conflict resolution.
+    </a>
+  </p></li><li class="listitem"><p>
+    Gummi boot has been replaced using systemd-boot.
+  </p></li><li class="listitem"><p>
+    Hydra package and NixOS module were added for convenience.
+  </p></li></ul></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-release-17.03.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-release-notes.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-release-16.03.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Release 17.03 (“Gorilla”, 2017/03/31) </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Release 16.03 (“Emu”, 2016/03/31)</td></tr></table></div></body></html>

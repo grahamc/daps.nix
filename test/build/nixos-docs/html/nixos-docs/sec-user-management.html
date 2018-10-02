@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Chapter 7. User Management</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-configuration.html" title="Part II. Configuration" /><link rel="prev" href="sec-ad-hoc-packages.html" title="Ad-Hoc Package Management" /><link rel="next" href="ch-file-systems.html" title="Chapter 8. File Systems" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 7. User Management</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-ad-hoc-packages.html">Prev</a> </td><th width="60%" align="center">Part II. Configuration</th><td width="20%" align="right"> <a accesskey="n" href="ch-file-systems.html">Next</a></td></tr></table><hr /></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a id="sec-user-management"></a>Chapter 7. User Management</h2></div></div></div><p>NixOS supports both declarative and imperative styles of user
+management.  In the declarative style, users are specified in
+<code class="filename">configuration.nix</code>.  For instance, the following
+states that a user account named <code class="literal">alice</code> shall exist:
+
+</p><pre class="programlisting">
+users.extraUsers.alice =
+  { isNormalUser = true;
+    home = "/home/alice";
+    description = "Alice Foobar";
+    extraGroups = [ "wheel" "networkmanager" ];
+    openssh.authorizedKeys.keys = [ "ssh-dss AAAAB3Nza... alice@foobar" ];
+  };
+</pre><p>
+
+Note that <code class="literal">alice</code> is a member of the
+<code class="literal">wheel</code> and <code class="literal">networkmanager</code> groups,
+which allows her to use <span class="command"><strong>sudo</strong></span> to execute commands as
+<code class="literal">root</code> and to configure the network, respectively.
+Also note the SSH public key that allows remote logins with the
+corresponding private key. Users created in this way do not have a
+password by default, so they cannot log in via mechanisms that require
+a password. However, you can use the <span class="command"><strong>passwd</strong></span> program
+to set a password, which is retained across invocations of
+<span class="command"><strong>nixos-rebuild</strong></span>.</p><p>If you set users.mutableUsers to false, then the contents of /etc/passwd
+and /etc/group will be congruent to your NixOS configuration. For instance,
+if you remove a user from users.extraUsers and run nixos-rebuild, the user
+account will cease to exist. Also, imperative commands for managing users
+and groups, such as useradd, are no longer available. Passwords may still be
+assigned by setting the user's <code class="literal">hashedPassword</code> option. A
+hashed password can be generated using <span class="command"><strong>mkpasswd -m sha-512</strong></span>
+after installing the <code class="literal">mkpasswd</code> package.</p><p>A user ID (uid) is assigned automatically.  You can also specify
+a uid manually by adding
+
+</p><pre class="programlisting">
+    uid = 1000;
+</pre><p>
+
+to the user specification.</p><p>Groups can be specified similarly.  The following states that a
+group named <code class="literal">students</code> shall exist:
+
+</p><pre class="programlisting">
+users.extraGroups.students.gid = 1000;
+</pre><p>
+
+As with users, the group ID (gid) is optional and will be assigned
+automatically if it’s missing.</p><p>In the imperative style, users and groups are managed by
+commands such as <span class="command"><strong>useradd</strong></span>,
+<span class="command"><strong>groupmod</strong></span> and so on.  For instance, to create a user
+account named <code class="literal">alice</code>:
+
+</p><pre class="screen">
+# useradd -m alice</pre><p>
+
+To make all nix tools available to this new user use `su - USER` which 
+opens a login shell (==shell that loads the profile) for given user. 
+This will create the ~/.nix-defexpr symlink. So run:
+
+</p><pre class="screen">
+# su - alice -c "true"</pre><p>
+
+
+The flag <code class="option">-m</code> causes the creation of a home directory
+for the new user, which is generally what you want.  The user does not
+have an initial password and therefore cannot log in.  A password can
+be set using the <span class="command"><strong>passwd</strong></span> utility:
+
+</p><pre class="screen">
+# passwd alice
+Enter new UNIX password: ***
+Retype new UNIX password: ***
+</pre><p>
+
+A user can be deleted using <span class="command"><strong>userdel</strong></span>:
+
+</p><pre class="screen">
+# userdel -r alice</pre><p>
+
+The flag <code class="option">-r</code> deletes the user’s home directory.
+Accounts can be modified using <span class="command"><strong>usermod</strong></span>.  Unix
+groups can be managed using <span class="command"><strong>groupadd</strong></span>,
+<span class="command"><strong>groupmod</strong></span> and <span class="command"><strong>groupdel</strong></span>.</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-ad-hoc-packages.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-configuration.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ch-file-systems.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Ad-Hoc Package Management </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 8. File Systems</td></tr></table></div></body></html>

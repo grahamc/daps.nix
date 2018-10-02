@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Options Types</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="sec-writing-modules.html" title="Chapter 22. Writing NixOS Modules" /><link rel="prev" href="sec-writing-modules.html" title="Chapter 22. Writing NixOS Modules" /><link rel="next" href="sec-option-definitions.html" title="Option Definitions" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Options Types</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-writing-modules.html">Prev</a> </td><th width="60%" align="center">Chapter 22. Writing NixOS Modules</th><td width="20%" align="right"> <a accesskey="n" href="sec-option-definitions.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-option-types"></a>Options Types</h2></div></div></div><p>Option types are a way to put constraints on the values a module option 
+    can take.
+    Types are also responsible of how values are merged in case of multiple 
+    value definitions.</p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm140404927101808"></a>Basic Types</h3></div></div></div><p>Basic types are the simplest available types in the module system.
+      Basic types include multiple string types that mainly differ in how 
+      definition merging is handled.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="varname">types.bool</code></span></dt><dd><p>A boolean, its values can be <code class="literal">true</code> or 
+        <code class="literal">false</code>.</p></dd><dt><span class="term"><code class="varname">types.int</code></span></dt><dd><p>An integer.</p></dd><dt><span class="term"><code class="varname">types.path</code></span></dt><dd><p>A filesystem path, defined as anything that when coerced to 
+        a string starts with a slash. Even if derivations can be considered as 
+        path, the more specific <code class="literal">types.package</code> should be 
+        preferred.</p></dd><dt><span class="term"><code class="varname">types.package</code></span></dt><dd><p>A derivation or a store path.</p></dd></dl></div><p>String related types:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="varname">types.str</code></span></dt><dd><p>A string. Multiple definitions cannot be 
+        merged.</p></dd><dt><span class="term"><code class="varname">types.lines</code></span></dt><dd><p>A string. Multiple definitions are concatenated with a new 
+        line <code class="literal">"\n"</code>.</p></dd><dt><span class="term"><code class="varname">types.commas</code></span></dt><dd><p>A string. Multiple definitions are concatenated with a comma 
+        <code class="literal">","</code>.</p></dd><dt><span class="term"><code class="varname">types.envVar</code></span></dt><dd><p>A string. Multiple definitions are concatenated with a 
+        collon <code class="literal">":"</code>.</p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm140404927083216"></a>Value Types</h3></div></div></div><p>Value types are type that take a value parameter.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="varname">types.enum</code> <em class="replaceable"><code>l</code></em></span></dt><dd><p>One element of the list <em class="replaceable"><code>l</code></em>, e.g. 
+        <code class="literal">types.enum [ "left" "right" ]</code>. Multiple definitions 
+        cannot be merged.</p></dd><dt><span class="term"><code class="varname">types.separatedString</code>
+      <em class="replaceable"><code>sep</code></em></span></dt><dd><p>A string with a custom separator
+        <em class="replaceable"><code>sep</code></em>, e.g. <code class="literal">types.separatedString
+          "|"</code>.</p></dd><dt><span class="term"><code class="varname">types.submodule</code> <em class="replaceable"><code>o</code></em></span></dt><dd><p>A set of sub options <em class="replaceable"><code>o</code></em>.
+        <em class="replaceable"><code>o</code></em> can be an attribute set or a function
+        returning an attribute set. Submodules are used in composed types to
+        create modular options. Submodule are detailed in <a class="xref" href="sec-option-types.html#section-option-types-submodule" title="Submodule">the section called “Submodule”</a>.</p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm140404927071872"></a>Composed Types</h3></div></div></div><p>Composed types are types that take a type as parameter. <code class="literal">listOf 
+       int</code> and <code class="literal">either int str</code> are examples of 
+     composed types.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="varname">types.listOf</code> <em class="replaceable"><code>t</code></em></span></dt><dd><p>A list of <em class="replaceable"><code>t</code></em> type, e.g. 
+        <code class="literal">types.listOf int</code>. Multiple definitions are merged 
+        with list concatenation.</p></dd><dt><span class="term"><code class="varname">types.attrsOf</code> <em class="replaceable"><code>t</code></em></span></dt><dd><p>An attribute set of where all the values are of 
+        <em class="replaceable"><code>t</code></em> type. Multiple definitions result in the 
+        joined attribute set.</p></dd><dt><span class="term"><code class="varname">types.loaOf</code> <em class="replaceable"><code>t</code></em></span></dt><dd><p>An attribute set or a list of <em class="replaceable"><code>t</code></em> 
+        type. Multiple definitions are merged according to the 
+        value.</p></dd><dt><span class="term"><code class="varname">types.nullOr</code> <em class="replaceable"><code>t</code></em></span></dt><dd><p><code class="literal">null</code> or type 
+        <em class="replaceable"><code>t</code></em>. Multiple definitions are merged according 
+        to type <em class="replaceable"><code>t</code></em>.</p></dd><dt><span class="term"><code class="varname">types.uniq</code> <em class="replaceable"><code>t</code></em></span></dt><dd><p>Ensures that type <em class="replaceable"><code>t</code></em> cannot be 
+        merged. It is used to ensure option definitions are declared only 
+        once.</p></dd><dt><span class="term"><code class="varname">types.either</code> <em class="replaceable"><code>t1</code></em> 
+      <em class="replaceable"><code>t2</code></em></span></dt><dd><p>Type <em class="replaceable"><code>t1</code></em> or type 
+        <em class="replaceable"><code>t2</code></em>, e.g. <code class="literal">with types; either int 
+          str</code>. Multiple definitions cannot be 
+        merged.</p></dd><dt><span class="term"><code class="varname">types.coercedTo</code> <em class="replaceable"><code>from</code></em>
+        <em class="replaceable"><code>f</code></em> <em class="replaceable"><code>to</code></em></span></dt><dd><p>Type <em class="replaceable"><code>to</code></em> or type
+        <em class="replaceable"><code>from</code></em> which will be coerced to
+	type <em class="replaceable"><code>to</code></em> using function
+	<em class="replaceable"><code>f</code></em> which takes an argument of type
+        <em class="replaceable"><code>from</code></em> and return a value of type
+	<em class="replaceable"><code>to</code></em>. Can be used to preserve backwards
+        compatibility of an option if its type was changed.</p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="section-option-types-submodule"></a>Submodule</h3></div></div></div><p><code class="literal">submodule</code> is a very powerful type that defines a set
+    of sub-options that are handled like a separate module.</p><p>It takes a parameter <em class="replaceable"><code>o</code></em>, that should be a set,
+    or a function returning a set with an <code class="literal">options</code> key
+    defining the sub-options.
+    Submodule option definitions are type-checked accordingly to the
+    <code class="literal">options</code> declarations.
+    Of course, you can nest submodule option definitons for even higher
+    modularity.</p><p>The option set can be defined directly
+    (<a class="xref" href="sec-option-types.html#ex-submodule-direct" title="Example 22.6. Directly defined submodule">Example 22.6, “Directly defined submodule”</a>) or as reference
+    (<a class="xref" href="sec-option-types.html#ex-submodule-reference" title="Example 22.7. Submodule defined as a reference">Example 22.7, “Submodule defined as a
+    reference”</a>).</p><div class="example"><a id="ex-submodule-direct"></a><p class="title"><strong>Example 22.6. Directly defined submodule</strong></p><div class="example-contents"><pre class="screen">
+options.mod = mkOption {
+  description = "submodule example";
+  type = with types; submodule {
+    options = {
+      foo = mkOption {
+        type = int;
+      };
+      bar = mkOption {
+        type = str;
+      };
+    };
+  };
+};</pre></div></div><br class="example-break" /><div class="example"><a id="ex-submodule-reference"></a><p class="title"><strong>Example 22.7. Submodule defined as a
+    reference</strong></p><div class="example-contents"><pre class="screen">
+let
+  modOptions = {
+    options = {
+      foo = mkOption {
+        type = int;
+      };
+      bar = mkOption {
+        type = int;
+      };
+    };
+  };
+in
+options.mod = mkOption {
+  description = "submodule example";
+  type = with types; submodule modOptions;
+};</pre></div></div><br class="example-break" /><p>The <code class="literal">submodule</code> type is especially interesting when
+    used with composed types like <code class="literal">attrsOf</code> or
+    <code class="literal">listOf</code>.
+    When composed with <code class="literal">listOf</code>
+    (<a class="xref" href="sec-option-types.html#ex-submodule-listof-declaration" title="Example 22.8. Declaration of a list nof submodules">Example 22.8, “Declaration of a list 
+    nof submodules”</a>),
+    <code class="literal">submodule</code> allows multiple definitions of the submodule
+    option set (<a class="xref" href="sec-option-types.html#ex-submodule-listof-definition" title="Example 22.9. Definition of a list of submodules">Example 22.9, “Definition of a list of 
+    submodules”</a>).</p><div class="example"><a id="ex-submodule-listof-declaration"></a><p class="title"><strong>Example 22.8. Declaration of a list 
+    nof submodules</strong></p><div class="example-contents"><pre class="screen">
+options.mod = mkOption {
+  description = "submodule example";
+  type = with types; listOf (submodule {
+    options = {
+      foo = mkOption {
+        type = int;
+      };
+      bar = mkOption {
+        type = str;
+      };
+    };
+  });
+};</pre></div></div><br class="example-break" /><div class="example"><a id="ex-submodule-listof-definition"></a><p class="title"><strong>Example 22.9. Definition of a list of 
+    submodules</strong></p><div class="example-contents"><pre class="screen">
+config.mod = [
+  { foo = 1; bar = "one"; }
+  { foo = 2; bar = "two"; }
+];</pre></div></div><br class="example-break" /><p>When composed with <code class="literal">attrsOf</code>
+    (<a class="xref" href="sec-option-types.html#ex-submodule-attrsof-declaration" title="Example 22.10. Declaration of attribute sets of submodules">Example 22.10, “Declaration of 
+    attribute sets of submodules”</a>),
+    <code class="literal">submodule</code> allows multiple named definitions of the
+    submodule option set (<a class="xref" href="sec-option-types.html#ex-submodule-attrsof-definition" title="Example 22.11. Declaration of attribute sets of submodules">Example 22.11, “Declaration of 
+    attribute sets of submodules”</a>).
+  </p><div class="example"><a id="ex-submodule-attrsof-declaration"></a><p class="title"><strong>Example 22.10. Declaration of 
+    attribute sets of submodules</strong></p><div class="example-contents"><pre class="screen">
+options.mod = mkOption {
+  description = "submodule example";
+  type = with types; attrsOf (submodule {
+    options = {
+      foo = mkOption {
+        type = int;
+      };
+      bar = mkOption {
+        type = str;
+      };
+    };
+  });
+};</pre></div></div><br class="example-break" /><div class="example"><a id="ex-submodule-attrsof-definition"></a><p class="title"><strong>Example 22.11. Declaration of 
+    attribute sets of submodules</strong></p><div class="example-contents"><pre class="screen">
+config.mod.one = { foo = 1; bar = "one"; };
+config.mod.two = { foo = 2; bar = "two"; };</pre></div></div><br class="example-break" /></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm140404927023664"></a>Extending types</h3></div></div></div><p>Types are mainly characterized by their <code class="literal">check</code> and 
+    <code class="literal">merge</code> functions.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="varname">check</code></span></dt><dd><p>The function to type check the value. Takes a value as 
+        parameter and return a boolean.
+        It is possible to extend a type check with the 
+        <code class="literal">addCheck</code> function (<a class="xref" href="sec-option-types.html#ex-extending-type-check-1" title="Example 22.12. Adding a type check">Example 22.12, “Adding a type check”</a>), or to fully override the 
+        check function (<a class="xref" href="sec-option-types.html#ex-extending-type-check-2" title="Example 22.13. Overriding a type check">Example 22.13, “Overriding a type 
+    check”</a>).</p><div class="example"><a id="ex-extending-type-check-1"></a><p class="title"><strong>Example 22.12. Adding a type check</strong></p><div class="example-contents"><pre class="screen">
+byte = mkOption {
+  description = "An integer between 0 and 255.";
+  type = addCheck types.int (x: x &gt;= 0 &amp;&amp; x &lt;= 255);
+};</pre></div></div><br class="example-break" /><div class="example"><a id="ex-extending-type-check-2"></a><p class="title"><strong>Example 22.13. Overriding a type 
+    check</strong></p><div class="example-contents"><pre class="screen">
+nixThings = mkOption {
+  description = "words that start with 'nix'";
+  type = types.str // {
+    check = (x: lib.hasPrefix "nix" x)
+  };
+};</pre></div></div><br class="example-break" /></dd><dt><span class="term"><code class="varname">merge</code></span></dt><dd><p>Function to merge the options values when multiple values 
+        are set.
+The function takes two parameters, <code class="literal">loc</code> the option path as a 
+list of strings, and <code class="literal">defs</code> the list of defined values as a 
+list.
+It is possible to override a type merge function for custom 
+needs.</p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm140404927011792"></a>Custom Types</h3></div></div></div><p>Custom types can be created with the <code class="literal">mkOptionType</code> 
+  function.
+As type creation includes some more complex topics such as submodule handling, 
+it is recommended to get familiar with <code class="filename"><a class="filename" href="development-https://github.com/NixOS/nixpkgs/blob/master/lib/types.nix" target="_top">types.nix</a></code> 
+code before creating a new type.</p><p>The only required parameter is <code class="literal">name</code>.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="varname">name</code></span></dt><dd><p>A string representation of the type function 
+        name.</p></dd><dt><span class="term"><code class="varname">definition</code></span></dt><dd><p>Description of the type used in documentation. Give 
+        information of the type and any of its arguments.</p></dd><dt><span class="term"><code class="varname">check</code></span></dt><dd><p>A function to type check the definition value. Takes the 
+        definition value as a parameter and returns a boolean indicating the 
+        type check result, <code class="literal">true</code> for success and 
+        <code class="literal">false</code> for failure.</p></dd><dt><span class="term"><code class="varname">merge</code></span></dt><dd><p>A function to merge multiple definitions values. Takes two 
+        parameters:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><em class="replaceable"><code>loc</code></em></span></dt><dd><p>The option path as a list of strings, e.g. 
+              <code class="literal">["boot" "loader "grub" 
+                "enable"]</code>.</p></dd><dt><span class="term"><em class="replaceable"><code>defs</code></em></span></dt><dd><p>The list of sets of defined <code class="literal">value</code> 
+              and <code class="literal">file</code> where the value was defined, e.g. 
+              <code class="literal">[ { file = "/foo.nix"; value = 1; } { file = "/bar.nix"; 
+                value = 2 } ]</code>. The <code class="literal">merge</code> function 
+              should return the merged value or throw an error in case the 
+              values are impossible or not meant to be merged.</p></dd></dl></div></dd><dt><span class="term"><code class="varname">getSubOptions</code></span></dt><dd><p>For composed types that can take a submodule as type 
+        parameter, this function generate sub-options documentation. It takes 
+        the current option prefix as a list and return the set of sub-options. 
+        Usually defined in a recursive manner by adding a term to the prefix, 
+        e.g. <code class="literal">prefix: elemType.getSubOptions (prefix ++ 
+          [<em class="replaceable"><code>"prefix"</code></em>])</code> where 
+        <em class="replaceable"><code>"prefix"</code></em> is the newly added 
+        prefix.</p></dd><dt><span class="term"><code class="varname">getSubModules</code></span></dt><dd><p>For composed types that can take a submodule as type 
+        parameter, this function should return the type parameters submodules. 
+        If the type parameter is called <code class="literal">elemType</code>, the 
+        function should just recursively look into submodules by returning 
+        <code class="literal">elemType.getSubModules;</code>.</p></dd><dt><span class="term"><code class="varname">substSubModules</code></span></dt><dd><p>For composed types that can take a submodule as type 
+        parameter, this function can be used to substitute the parameter of a 
+        submodule type. It takes a module as parameter and return the type with 
+        the submodule options substituted. It is usually defined as a type 
+        function call with a recursive call to 
+        <code class="literal">substSubModules</code>, e.g for a type 
+        <code class="literal">composedType</code> that take an <code class="literal">elemtype</code> 
+        type parameter, this function should be defined as <code class="literal">m: 
+          composedType (elemType.substSubModules m)</code>.</p></dd><dt><span class="term"><code class="varname">typeMerge</code></span></dt><dd><p>A function to merge multiple type declarations. Takes the 
+        type to merge <code class="literal">functor</code> as parameter. A 
+        <code class="literal">null</code> return value means that type cannot be 
+        merged.</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><em class="replaceable"><code>f</code></em></span></dt><dd><p>The type to merge  
+              <code class="literal">functor</code>.</p></dd></dl></div><p>Note: There is a generic <code class="literal">defaultTypeMerge</code> that 
+        work with most of value and composed types.</p></dd><dt><span class="term"><code class="varname">functor</code></span></dt><dd><p>An attribute set representing the type. It is used for type 
+        operations and has the following keys:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="varname">type</code></span></dt><dd><p>The type function.</p></dd><dt><span class="term"><code class="varname">wrapped</code></span></dt><dd><p>Holds the type parameter for composed types.</p></dd><dt><span class="term"><code class="varname">payload</code></span></dt><dd><p>Holds the value parameter for value types. 
+              The types that have a <code class="literal">payload</code> are the
+              <code class="literal">enum</code>, <code class="literal">separatedString</code> and
+              <code class="literal">submodule</code> types.</p></dd><dt><span class="term"><code class="varname">binOp</code></span></dt><dd><p>A binary operation that can merge the payloads of two 
+              same types. Defined as a function that take two payloads as 
+              parameters and return the payloads merged.</p></dd></dl></div></dd></dl></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-writing-modules.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sec-writing-modules.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-option-definitions.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 22. Writing NixOS Modules </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Option Definitions</td></tr></table></div></body></html>

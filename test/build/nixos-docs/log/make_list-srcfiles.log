@@ -1,0 +1,3 @@
+Wed Nov 22 15:18:40 EST 2017
+/nix/store/39nkdxqpsnk2yml0n3a9lhzxq04bv1vs-daps-20171116/share/daps/make/setfiles.mk:61: *** Fatal error:
+/home/grahamc/projects/nixos-docs/test/xml/configuration-ad-hoc-network-config.xml:12: parser error : expected '>' <title>Ad-Hoc Configuration</title> ^ /home/grahamc/projects/nixos-docs/test/xml/configuration-networking.xml:18: element include: XInclude error : could not load /home/grahamc/projects/nixos-docs/test/xml/configuration-ad-hoc-network-config.xml, and no fallback was found.  Stop.

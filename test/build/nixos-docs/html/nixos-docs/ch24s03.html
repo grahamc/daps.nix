@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Creating a Topic</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="sec-writing-documentation.html" title="Chapter 24. Writing NixOS Documentation" /><link rel="prev" href="ch24s02.html" title="Editing DocBook XML" /><link rel="next" href="ch24s04.html" title="Adding a Topic to the Book" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Creating a Topic</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch24s02.html">Prev</a> </td><th width="60%" align="center">Chapter 24. Writing NixOS Documentation</th><td width="20%" align="right"> <a accesskey="n" href="ch24s04.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idm140404926869888"></a>Creating a Topic</h2></div></div></div><p>
+ You can use an existing topic as a basis for the new topic or create a topic from scratch.
+</p><p>
+Keep the following guidelines in mind when you create and add a topic:
+
+</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+    The NixOS <a class="link" href="development-http://www.docbook.org/tdg5/en/html/book.html" target="_top"><code class="sgmltag-element">book</code></a>
+    element is in <code class="filename">nixos/doc/manual/manual.xml</code>.
+    It includes several
+    <a class="link" href="development-http://www.docbook.org/tdg5/en/html/book.html" target="_top"><code class="sgmltag-element">part</code>s</a>
+    which are in subdirectories.
+  </p></li><li class="listitem"><p>
+    Store the topic file in the same directory as the <code class="sgmltag-element">part</code>
+    to which it belongs. If your topic is about configuring a NixOS
+    module, then the XML file can be stored alongside the module
+    definition <code class="filename">nix</code> file.
+  </p></li><li class="listitem"><p>
+    If you include multiple words in the file name, separate the words
+    with a dash. For example: <code class="filename">ipv6-config.xml</code>.
+  </p></li><li class="listitem"><p>
+    Make sure that the <code class="sgmltag-element">xml:id</code> value is unique. You can use
+    abbreviations if the ID is too long. For example:
+    <code class="varname">nixos-config</code>.
+  </p></li><li class="listitem"><p>
+    Determine whether your topic is a chapter or a section. If you are
+    unsure, open an existing topic file and check whether the main
+    element is chapter or section.
+  </p></li></ul></div><p>
+
+</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch24s02.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sec-writing-documentation.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ch24s04.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Editing DocBook XML </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Adding a Topic to the Book</td></tr></table></div></body></html>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Installing in a Virtualbox guest</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="sec-installation.html" title="Chapter 2. Installing NixOS" /><link rel="prev" href="sec-booting-from-pxe.html" title="Booting from the “netboot” media (PXE)" /><link rel="next" href="sec-changing-config.html" title="Chapter 3. Changing the Configuration" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Installing in a Virtualbox guest</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-booting-from-pxe.html">Prev</a> </td><th width="60%" align="center">Chapter 2. Installing NixOS</th><td width="20%" align="right"> <a accesskey="n" href="sec-changing-config.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-instaling-virtualbox-guest"></a>Installing in a Virtualbox guest</h2></div></div></div><p>
+  Installing NixOS into a Virtualbox guest is convenient for users who want to
+  try NixOS without installing it on bare metal. If you want to use a pre-made
+  Virtualbox appliance, it is available at <a class="link" href="installation-https://nixos.org/nixos/download.html" target="_top">the downloads page</a>.
+  If you want to set up a Virtualbox guest manually, follow these instructions:
+</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Add a New Machine in Virtualbox with OS Type "Linux / Other
+  Linux"</p></li><li class="listitem"><p>Base Memory Size: 768 MB or higher.</p></li><li class="listitem"><p>New Hard Disk of 8 GB or higher.</p></li><li class="listitem"><p>Mount the CD-ROM with the NixOS ISO (by clicking on
+  CD/DVD-ROM)</p></li><li class="listitem"><p>Click on Settings / System / Processor and enable
+  PAE/NX</p></li><li class="listitem"><p>Click on Settings / System / Acceleration and enable
+  "VT-x/AMD-V" acceleration</p></li><li class="listitem"><p>Save the settings, start the virtual machine, and continue
+  installation like normal</p></li></ol></div><p>
+  There are a few modifications you should make in configuration.nix.
+  Enable booting:
+</p><pre class="programlisting">
+boot.loader.grub.device = "/dev/sda";
+</pre><p>
+  Also remove the fsck that runs at startup. It will always fail to run,
+  stopping your boot until you press <code class="literal">*</code>.
+</p><pre class="programlisting">
+boot.initrd.checkJournalingFS = false;
+</pre><p>
+  Shared folders can be given a name and a path in the host system in the
+  VirtualBox settings (Machine / Settings / Shared Folders, then click on the
+  "Add" icon). Add the following to the
+  <code class="literal">/etc/nixos/configuration.nix</code> to auto-mount them:
+</p><pre class="programlisting">
+{ config, pkgs, ...} :
+{
+  ...
+
+  fileSystems."/virtualboxshare" = {
+    fsType = "vboxsf";
+    device = "nameofthesharedfolder";
+    options = [ "rw" ];
+  };
+}
+</pre><p>
+  The folder will be available directly under the root directory.
+</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-booting-from-pxe.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sec-installation.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-changing-config.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Booting from the <span class="quote">“<span class="quote">netboot</span>”</span> media (PXE) </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 3. Changing the Configuration</td></tr></table></div></body></html>

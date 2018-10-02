@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Chapter 8. File Systems</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="ch-configuration.html" title="Part II. Configuration" /><link rel="prev" href="sec-user-management.html" title="Chapter 7. User Management" /><link rel="next" href="sec-x11.html" title="Chapter 9. X Window System" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 8. File Systems</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-user-management.html">Prev</a> </td><th width="60%" align="center">Part II. Configuration</th><td width="20%" align="right"> <a accesskey="n" href="sec-x11.html">Next</a></td></tr></table><hr /></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a id="ch-file-systems"></a>Chapter 8. File Systems</h2></div></div></div><div class="toc"><p><strong>Table of Contents</strong></p><dl class="toc"><dt><span class="section"><a href="ch-file-systems.html#sec-luks-file-systems">LUKS-Encrypted File Systems</a></span></dt></dl></div><p>You can define file systems using the
+<code class="option">fileSystems</code> configuration option.  For instance, the
+following definition causes NixOS to mount the Ext4 file system on
+device <code class="filename">/dev/disk/by-label/data</code> onto the mount
+point <code class="filename">/data</code>:
+
+</p><pre class="programlisting">
+fileSystems."/data" =
+  { device = "/dev/disk/by-label/data";
+    fsType = "ext4";
+  };
+</pre><p>
+
+Mount points are created automatically if they don’t already exist.
+For <code class="option">device</code>, it’s best to use the topology-independent
+device aliases in <code class="filename">/dev/disk/by-label</code> and
+<code class="filename">/dev/disk/by-uuid</code>, as these don’t change if the
+topology changes (e.g. if a disk is moved to another IDE
+controller).</p><p>You can usually omit the file system type
+(<code class="option">fsType</code>), since <span class="command"><strong>mount</strong></span> can usually
+detect the type and load the necessary kernel module automatically.
+However, if the file system is needed at early boot (in the initial
+ramdisk) and is not <code class="literal">ext2</code>, <code class="literal">ext3</code>
+or <code class="literal">ext4</code>, then it’s best to specify
+<code class="option">fsType</code> to ensure that the kernel module is
+available.</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>System startup will fail if any of the filesystems fails to mount,
+dropping you to the emergency shell.
+You can make a mount asynchronous and non-critical by adding
+<code class="literal">options = [ "nofail" ];</code>.
+</p></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-luks-file-systems"></a>LUKS-Encrypted File Systems</h2></div></div></div><p>NixOS supports file systems that are encrypted using
+<span class="emphasis"><em>LUKS</em></span> (Linux Unified Key Setup).  For example,
+here is how you create an encrypted Ext4 file system on the device
+<code class="filename">/dev/disk/by-uuid/3f6b0024-3a44-4fde-a43a-767b872abe5d</code>:
+
+</p><pre class="screen">
+# cryptsetup luksFormat /dev/disk/by-uuid/3f6b0024-3a44-4fde-a43a-767b872abe5d
+
+WARNING!
+========
+This will overwrite data on /dev/disk/by-uuid/3f6b0024-3a44-4fde-a43a-767b872abe5d irrevocably.
+
+Are you sure? (Type uppercase yes): YES
+Enter LUKS passphrase: ***
+Verify passphrase: ***
+
+# cryptsetup luksOpen /dev/disk/by-uuid/3f6b0024-3a44-4fde-a43a-767b872abe5d crypted
+Enter passphrase for /dev/disk/by-uuid/3f6b0024-3a44-4fde-a43a-767b872abe5d: ***
+
+# mkfs.ext4 /dev/mapper/crypted
+</pre><p>
+
+To ensure that this file system is automatically mounted at boot time
+as <code class="filename">/</code>, add the following to
+<code class="filename">configuration.nix</code>:
+
+</p><pre class="programlisting">
+boot.initrd.luks.devices.crypted.device = "/dev/disk/by-uuid/3f6b0024-3a44-4fde-a43a-767b872abe5d";
+fileSystems."/".device = "/dev/mapper/crypted";
+</pre><p>
+
+Should grub be used as bootloader, and <code class="filename">/boot</code> is located
+on an encrypted partition, it is necessary to add the following grub option:
+</p><pre class="programlisting">boot.loader.grub.enableCryptodisk = true;</pre><p>
+
+</p></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-user-management.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch-configuration.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-x11.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 7. User Management </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 9. X Window System</td></tr></table></div></body></html>

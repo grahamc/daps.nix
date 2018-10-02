@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" xml:base="configuration-networking.xml" version="5.0" xml:id="sec-networking">
+
+<title>Networking</title>
+
+<para>This section describes how to configure networking components on
+your NixOS machine.</para>
+
+<xi:include href="configuration-network-manager.xml"/>
+<xi:include href="configuration-ssh.xml"/>
+<xi:include href="configuration-ipv4-config.xml"/>
+<xi:include href="configuration-ipv6-config.xml"/>
+<xi:include href="configuration-firewall.xml"/>
+<xi:include href="configuration-wireless.xml"/>
+<xi:include href="configuration-ad-hoc-network-config.xml"/>
+
+<!-- TODO: OpenVPN, NAT -->
+
+</chapter>

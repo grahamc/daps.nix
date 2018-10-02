@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Running Tests</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="home" href="index.html" title="NixOS Manual" /><link rel="up" href="sec-nixos-tests.html" title="Chapter 26. NixOS Tests" /><link rel="prev" href="sec-nixos-tests.html" title="Chapter 26. NixOS Tests" /><link rel="next" href="sec-running-nixos-tests.html" title="Running Tests interactively" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Running Tests</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="sec-nixos-tests.html">Prev</a> </td><th width="60%" align="center">Chapter 26. NixOS Tests</th><td width="20%" align="right"> <a accesskey="n" href="sec-running-nixos-tests.html">Next</a></td></tr></table><hr /></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="sec-running-nixos-tests-interactively"></a>Running Tests</h2></div></div></div><p>You can run tests using <span class="command"><strong>nix-build</strong></span>. For
+example, to run the test <code class="filename"><a class="filename" href="development-https://github.com/NixOS/nixpkgs/blob/master/nixos/tests/login.nix" target="_top">login.nix</a></code>,
+you just do:
+
+</p><pre class="screen">
+$ nix-build '&lt;nixpkgs/nixos/tests/login.nix&gt;'
+</pre><p>
+
+or, if you don’t want to rely on <code class="envar">NIX_PATH</code>:
+
+</p><pre class="screen">
+$ cd /my/nixpkgs/nixos/tests
+$ nix-build login.nix
+…
+running the VM test script
+machine: QEMU running (pid 8841)
+…
+6 out of 6 tests succeeded
+</pre><p>
+
+After building/downloading all required dependencies, this will
+perform a build that starts a QEMU/KVM virtual machine containing a
+NixOS system. The virtual machine mounts the Nix store of the host;
+this makes VM creation very fast, as no disk image needs to be
+created. Afterwards, you can view a pretty-printed log of the test:
+
+</p><pre class="screen">
+$ firefox result/log.html
+</pre><p>
+
+</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="sec-nixos-tests.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="sec-nixos-tests.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="sec-running-nixos-tests.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 26. NixOS Tests </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Running Tests interactively</td></tr></table></div></body></html>
